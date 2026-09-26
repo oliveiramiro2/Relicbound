@@ -1,17 +1,21 @@
 using UnityEngine;
 
 [RequireComponent(typeof(PlayerInput))]
+[RequireComponent(typeof(GrappleVisualizer))]
 public class PlayerGrapple : MonoBehaviour
 {
+    [Header("Config")]
     [SerializeField] private float grappleDetectionRange = 8f;
+    [SerializeField] private LayerMask grappleLayer;
 
     private PlayerInput playerInput;
-
+    private GrappleVisualizer visualizer;
     private GrapplePoint currentTarget;
 
     private void Awake()
     {
         playerInput = GetComponent<PlayerInput>();
+        visualizer = GetComponent<GrappleVisualizer>();
     }
 
     private void Update()
@@ -23,7 +27,8 @@ public class PlayerGrapple : MonoBehaviour
     {
         Collider2D[] hits = Physics2D.OverlapCircleAll(
             transform.position,
-            grappleDetectionRange
+            grappleDetectionRange,
+            grappleLayer
         );
 
         GrapplePoint closestPoint = null;
@@ -56,6 +61,15 @@ public class PlayerGrapple : MonoBehaviour
                 transform.position,
                 currentTarget.Position
             );
+        }
+
+        if (currentTarget != null)
+        {
+            visualizer.ShowTarget(currentTarget.Position);
+        }
+        else
+        {
+            visualizer.HideTarget();
         }
     }
 

@@ -6,6 +6,7 @@ public class RelicManager : MonoBehaviour
 {
     private PlayerCapabilityController capabilityController;
     private RelicInventory inventory;
+    private RelicEquipment equipment;
 
     private readonly List<Relic> equippedRelics = new();
 
@@ -15,13 +16,20 @@ public class RelicManager : MonoBehaviour
             GetComponent<PlayerCapabilityController>();
 
         inventory = new RelicInventory();
+        equipment = new RelicEquipment(2);
     }
 
-    void Start()
+    private void Start()
     {
         Relic doubleJumpRelic = new DoubleJumpRelic();
 
         inventory.Add(doubleJumpRelic);
+
+        bool equipped = equipment.Equip(doubleJumpRelic);
+
+        Debug.Log(
+            $"Double Jump equipado: {equipped}"
+        );
     }
 
     public void Equip(Relic relic)

@@ -90,9 +90,19 @@ public class PlayerMovement : MonoBehaviour
 
     private void PerformJump()
     {
+        float finalJumpForce = jumpForce;
+
+        JumpHeightCapability jumpHeight =
+            capabilityController.Capabilities.Get<JumpHeightCapability>();
+
+        if (jumpHeight != null)
+        {
+            finalJumpForce *= jumpHeight.Multiplier;
+        }
+
         rb.linearVelocity = new Vector2(
             rb.linearVelocity.x,
-            jumpForce
+            finalJumpForce
         );
     }
 

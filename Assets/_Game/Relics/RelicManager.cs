@@ -5,6 +5,7 @@ using UnityEngine;
 public class RelicManager : MonoBehaviour
 {
     private PlayerCapabilityController capabilityController;
+    private RelicInventory inventory;
 
     private readonly List<Relic> equippedRelics = new();
 
@@ -12,11 +13,15 @@ public class RelicManager : MonoBehaviour
     {
         capabilityController =
             GetComponent<PlayerCapabilityController>();
+
+        inventory = new RelicInventory();
     }
 
     void Start()
     {
-        Equip(new DoubleJumpRelic());
+        Relic doubleJumpRelic = new DoubleJumpRelic();
+
+        inventory.Add(doubleJumpRelic);
     }
 
     public void Equip(Relic relic)

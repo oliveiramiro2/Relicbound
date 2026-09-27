@@ -10,6 +10,10 @@ public class PlayerGrapple : MonoBehaviour
     [SerializeField] private float grappleDetectionRange = 8f;
     [SerializeField] private LayerMask grappleLayer;
 
+    [Header("Swing")]
+    [SerializeField] private float swingAcceleration = 8f;
+    [SerializeField] private float maxSwingSpeed = 15f;
+
     private PlayerInput playerInput;
     private GrappleVisualizer visualizer;
     private GrapplePoint currentTarget;
@@ -57,6 +61,7 @@ public class PlayerGrapple : MonoBehaviour
 
         ApplyRopeConstraint();
         ApplySwingForce();
+        ApplySwingControl();
     }
 
     private void FindGrappleTarget()
@@ -194,6 +199,50 @@ public class PlayerGrapple : MonoBehaviour
             tangent = -tangent;
 
         rb.linearVelocity += tangent * 0.5f;
+    }
+
+    private void ApplySwingControl()
+    {
+        float input = playerInput.MoveInput.x;
+
+        if (Mathf.Abs(input) < 0.01f)
+            return;
+
+        Vector2 playerPosition = rb.position;
+        Vector2 pointPosition = currentTarget.Position;
+
+        Vector2 direction = (
+            playerPosition - pointPosition
+        ).normalized;
+
+        Vector2 tangent = new Vector2(
+            -direction.y,
+            direction.x
+        );
+
+        if (input < 0f)
+            tangent = -tangent;
+
+        float tangentialVelocity = Vector2.Dot(
+            rb.linearVelocity,
+            tangent
+        );
+
+        float targetVelocity = tangentialVelocity +
+                               input * swingAcceleration * Time.fixedDeltaTime;
+
+        targetVelocity = Mathf.Clamp(
+            targetVelocity,
+            -maxSwingSpeed,
+            maxSwingSpeed
+        );
+
+        Vector2 radialVelocity = direction *
+            Vector2.Dot(rb.linearVelocity, direction);
+
+        rb.linearVelocity =
+            radialVelocity +
+            tangent * targetVelocity;
     }
 
     private void OnDrawGizmosSelected()

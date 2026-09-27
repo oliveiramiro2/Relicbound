@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections.Generic;
 
 [RequireComponent(typeof(PlayerInput))]
 [RequireComponent(typeof(GrappleVisualizer))]
@@ -63,35 +64,9 @@ public class PlayerGrapple : MonoBehaviour
 
     private void FindGrappleTarget()
     {
-        Collider2D[] hits = Physics2D.OverlapCircleAll(
-            transform.position,
-            grappleDetectionRange,
-            grappleLayer
-        );
+        GrapplePoint[] candidates = FindGrappleCandidates();
 
-        GrapplePoint closestPoint = null;
-        float closestDistance = float.MaxValue;
-
-        foreach (Collider2D hit in hits)
-        {
-            GrapplePoint point = hit.GetComponent<GrapplePoint>();
-
-            if (point == null)
-                continue;
-
-            float distance = Vector2.Distance(
-                transform.position,
-                point.Position
-            );
-
-            if (distance < closestDistance)
-            {
-                closestDistance = distance;
-                closestPoint = point;
-            }
-        }
-
-        currentTarget = closestPoint;
+        currentTarget = SelectGrappleTarget(candidates);
 
         if (currentTarget != null)
         {
@@ -99,10 +74,7 @@ public class PlayerGrapple : MonoBehaviour
                 transform.position,
                 currentTarget.Position
             );
-        }
 
-        if (currentTarget != null)
-        {
             visualizer.ShowTarget(currentTarget.Position);
         }
         else
@@ -228,6 +200,76 @@ public class PlayerGrapple : MonoBehaviour
         rb.linearVelocity =
             radialVelocity +
             tangent * targetVelocity;
+    }
+
+    private GrapplePoint[] FindGrappleCandidates()
+    {
+        Collider2D[] hits = Physics2D.OverlapCircleAll(
+            transform.position,
+            grappleDetectionRange,
+            grappleLayer
+        );
+
+        List<GrapplePoint> candidates = new List<GrapplePoint>();
+
+        foreach (Collider2D hit in hits)
+        {
+            GrapplePoint point = hit.GetComponent<GrapplePoint>();
+
+            if (point == null)
+                continue;
+
+            candidates.Add(point);
+        }
+
+        return candidates.ToArray();
+    }
+
+    private GrapplePoint SelectGrappleTarget(
+            GrapplePoint[] candidates
+        )
+    {
+        GrapplePoint bestPoint = null;
+        float bestScore = float.MinValue;
+
+        foreach (GrapplePoint point in candidates)
+        {
+            float score = CalculateGrappleScore(point);
+
+            if (score > bestScore)
+            {
+                bestScore = score;
+                bestPoint = point;
+            }
+        }
+
+        return bestPoint;
+    }
+
+    private float CalculateGrappleScore(GrapplePoint point)
+    {
+        Vector2 toPoint = (
+            point.Position - (Vector2)transform.position
+        ).normalized;
+
+        Vector2 inputDirection = new Vector2(
+            playerInput.MoveInput.x,
+            0f
+        ).normalized;
+
+        float directionScore = Vector2.Dot(
+            inputDirection,
+            toPoint
+        );
+
+        float distance = Vector2.Distance(
+            transform.position,
+            point.Position
+        );
+
+        float distanceScore = 1f / (1f + distance);
+
+        return directionScore + distanceScore;
     }
 
     private void OnDrawGizmosSelected()

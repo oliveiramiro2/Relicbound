@@ -47,14 +47,14 @@ public class PlayerInput : MonoBehaviour
         JumpPressed = true;
     }
 
+    private void OnGrapple(InputAction.CallbackContext context)
+    {
+        GrapplePressed = true;
+    }
+
     private void LateUpdate()
     {
         JumpPressed = false;
         GrapplePressed = false;
-    }
-
-    private void OnGrapple(InputAction.CallbackContext context)
-    {
-        GrapplePressed = true;
     }
 }

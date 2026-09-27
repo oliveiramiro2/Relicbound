@@ -10,6 +10,7 @@ public class PlayerGrapple : MonoBehaviour
     [Header("Config")]
     [SerializeField] private float grappleDetectionRange = 8f;
     [SerializeField] private LayerMask grappleLayer;
+    [SerializeField] private LayerMask grappleObstacleLayer;
 
     [Header("Swing")]
     [SerializeField] private float swingAcceleration = 8f;
@@ -219,6 +220,9 @@ public class PlayerGrapple : MonoBehaviour
             if (point == null)
                 continue;
 
+            if (!HasLineOfSight(point))
+                continue;
+
             candidates.Add(point);
         }
 
@@ -270,6 +274,24 @@ public class PlayerGrapple : MonoBehaviour
         float distanceScore = 1f / (1f + distance);
 
         return directionScore + distanceScore;
+    }
+
+    private bool HasLineOfSight(GrapplePoint point)
+    {
+        Vector2 origin = transform.position;
+        Vector2 target = point.Position;
+
+        Vector2 direction = target - origin;
+        float distance = direction.magnitude;
+
+        RaycastHit2D hit = Physics2D.Raycast(
+            origin,
+            direction.normalized,
+            distance,
+            grappleObstacleLayer
+        );
+
+        return hit.collider == null;
     }
 
     private void OnDrawGizmosSelected()

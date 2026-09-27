@@ -11,16 +11,35 @@ public class PlayerGrapple : MonoBehaviour
     private PlayerInput playerInput;
     private GrappleVisualizer visualizer;
     private GrapplePoint currentTarget;
+    private GrappleRope rope;
+    private bool isGrappling;
 
     private void Awake()
     {
         playerInput = GetComponent<PlayerInput>();
         visualizer = GetComponent<GrappleVisualizer>();
+        rope = GetComponentInChildren<GrappleRope>();
     }
 
     private void Update()
     {
-        FindGrappleTarget();
+        if (!isGrappling)
+        {
+            FindGrappleTarget();
+        }
+
+        if (playerInput.GrapplePressed)
+        {
+            if (isGrappling)
+                ReleaseGrapple();
+            else
+                TryGrapple();
+        }
+
+        if (isGrappling)
+        {
+            UpdateRope();
+        }
     }
 
     private void FindGrappleTarget()
@@ -71,6 +90,33 @@ public class PlayerGrapple : MonoBehaviour
         {
             visualizer.HideTarget();
         }
+    }
+
+    private void TryGrapple()
+    {
+        if (currentTarget == null)
+            return;
+
+        isGrappling = true;
+
+        rope.Show(
+            transform.position,
+            currentTarget.Position
+        );
+    }
+
+    private void UpdateRope()
+    {
+        rope.Show(
+            transform.position,
+            currentTarget.Position
+        );
+    }
+
+    private void ReleaseGrapple()
+    {
+        isGrappling = false;
+        rope.Hide();
     }
 
     private void OnDrawGizmosSelected()

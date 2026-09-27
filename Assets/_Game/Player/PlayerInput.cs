@@ -6,6 +6,7 @@ public class PlayerInput : MonoBehaviour
     public Vector2 MoveInput { get; private set; }
 
     public bool JumpPressed { get; private set; }
+    public bool GrapplePressed { get; private set; }
 
     private PlayerInputActions inputActions;
 
@@ -22,6 +23,7 @@ public class PlayerInput : MonoBehaviour
         inputActions.Player.Move.canceled += OnMove;
 
         inputActions.Player.Jump.performed += OnJump;
+        inputActions.Player.Grapple.performed += OnGrapple;
     }
 
     private void OnDisable()
@@ -30,6 +32,7 @@ public class PlayerInput : MonoBehaviour
         inputActions.Player.Move.canceled -= OnMove;
 
         inputActions.Player.Jump.performed -= OnJump;
+        inputActions.Player.Grapple.performed -= OnGrapple;
 
         inputActions.Player.Disable();
     }
@@ -47,5 +50,11 @@ public class PlayerInput : MonoBehaviour
     private void LateUpdate()
     {
         JumpPressed = false;
+        GrapplePressed = false;
+    }
+
+    private void OnGrapple(InputAction.CallbackContext context)
+    {
+        GrapplePressed = true;
     }
 }

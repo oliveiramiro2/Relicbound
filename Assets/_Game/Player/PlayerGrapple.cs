@@ -2,6 +2,8 @@ using UnityEngine;
 
 [RequireComponent(typeof(PlayerInput))]
 [RequireComponent(typeof(GrappleVisualizer))]
+[RequireComponent(typeof(Rigidbody2D))]
+[RequireComponent(typeof(PlayerMovement))]
 public class PlayerGrapple : MonoBehaviour
 {
     [Header("Config")]
@@ -12,13 +14,19 @@ public class PlayerGrapple : MonoBehaviour
     private GrappleVisualizer visualizer;
     private GrapplePoint currentTarget;
     private GrappleRope rope;
+    private Rigidbody2D rb;
+    private PlayerMovement playerMovement;
+    public bool IsGrappling => isGrappling;
+    private float ropeLength;
     private bool isGrappling;
 
     private void Awake()
     {
         playerInput = GetComponent<PlayerInput>();
         visualizer = GetComponent<GrappleVisualizer>();
+        rb = GetComponent<Rigidbody2D>();
         rope = GetComponentInChildren<GrappleRope>();
+        playerMovement = GetComponent<PlayerMovement>();
     }
 
     private void Update()
@@ -40,6 +48,15 @@ public class PlayerGrapple : MonoBehaviour
         {
             UpdateRope();
         }
+    }
+
+    private void FixedUpdate()
+    {
+        if (!isGrappling)
+            return;
+
+        ApplyRopeConstraint();
+        ApplySwingForce();
     }
 
     private void FindGrappleTarget()
@@ -99,6 +116,11 @@ public class PlayerGrapple : MonoBehaviour
 
         isGrappling = true;
 
+        ropeLength = Vector2.Distance(
+            transform.position,
+            currentTarget.Position
+        );
+
         rope.Show(
             transform.position,
             currentTarget.Position
@@ -117,6 +139,61 @@ public class PlayerGrapple : MonoBehaviour
     {
         isGrappling = false;
         rope.Hide();
+    }
+
+    private void ApplyRopeConstraint()
+    {
+        Vector2 playerPosition = rb.position;
+        Vector2 pointPosition = currentTarget.Position;
+
+        Vector2 toPlayer = playerPosition - pointPosition;
+
+        float distance = toPlayer.magnitude;
+
+        if (distance <= ropeLength)
+            return;
+
+        Vector2 direction = toPlayer.normalized;
+
+        Vector2 constrainedPosition =
+            pointPosition + direction * ropeLength;
+
+        rb.position = constrainedPosition;
+
+        float outwardVelocity = Vector2.Dot(
+            rb.linearVelocity,
+            direction
+        );
+
+        if (outwardVelocity > 0f)
+        {
+            rb.linearVelocity -= direction * outwardVelocity;
+        }
+    }
+
+    private void ApplySwingForce()
+    {
+        float input = playerInput.MoveInput.x;
+
+        if (Mathf.Abs(input) < 0.01f)
+            return;
+
+        Vector2 playerPosition = rb.position;
+        Vector2 pointPosition = currentTarget.Position;
+
+        Vector2 direction = (
+            playerPosition - pointPosition
+        ).normalized;
+
+        Vector2 tangent = new Vector2(
+            -direction.y,
+            direction.x
+        );
+
+        if (input < 0f)
+            tangent = -tangent;
+
+        rb.linearVelocity += tangent * 0.5f;
     }
 
     private void OnDrawGizmosSelected()

@@ -2,6 +2,7 @@ using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody2D))]
 [RequireComponent(typeof(PlayerInput))]
+[RequireComponent(typeof(PlayerGrapple))]
 public class PlayerMovement : MonoBehaviour
 {
     [Header("Movement")]
@@ -19,13 +20,14 @@ public class PlayerMovement : MonoBehaviour
 
     private Rigidbody2D rb;
     private PlayerInput playerInput;
-
+    private PlayerGrapple playerGrapple;
     private bool isGrounded;
 
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
         playerInput = GetComponent<PlayerInput>();
+        playerGrapple = GetComponent<PlayerGrapple>();
     }
 
     private void Update()
@@ -36,6 +38,9 @@ public class PlayerMovement : MonoBehaviour
 
     private void FixedUpdate()
     {
+        if (playerGrapple.IsGrappling)
+            return;
+
         HandleMovement();
     }
 

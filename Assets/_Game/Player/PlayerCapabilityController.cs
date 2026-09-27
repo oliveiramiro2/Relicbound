@@ -7,5 +7,11 @@ public class PlayerCapabilityController : MonoBehaviour
     private void Awake()
     {
         Capabilities = new PlayerCapabilities();
+        AddCapability(new DoubleJumpCapability());
+    }
+
+    public void AddCapability(PlayerCapability capability)
+    {
+        Capabilities.Add(capability);
     }
 }

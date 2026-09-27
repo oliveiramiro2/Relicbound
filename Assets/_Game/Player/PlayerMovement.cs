@@ -1,8 +1,9 @@
 using UnityEngine;
-
 [RequireComponent(typeof(Rigidbody2D))]
 [RequireComponent(typeof(PlayerInput))]
 [RequireComponent(typeof(PlayerGrapple))]
+
+[RequireComponent(typeof(PlayerCapabilityController))]
 public class PlayerMovement : MonoBehaviour
 {
     [Header("Movement")]
@@ -12,6 +13,8 @@ public class PlayerMovement : MonoBehaviour
 
     [Header("Jump")]
     [SerializeField] private float jumpForce = 12f;
+    private PlayerCapabilityController capabilityController;
+    private int jumpsUsed;
 
     [Header("Ground Check")]
     [SerializeField] private Transform groundCheck;
@@ -28,6 +31,7 @@ public class PlayerMovement : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         playerInput = GetComponent<PlayerInput>();
         playerGrapple = GetComponent<PlayerGrapple>();
+        capabilityController = GetComponent<PlayerCapabilityController>();
     }
 
     private void Update()
@@ -64,9 +68,28 @@ public class PlayerMovement : MonoBehaviour
         if (!playerInput.JumpPressed)
             return;
 
-        if (!isGrounded)
+        if (isGrounded)
+        {
+            jumpsUsed = 0;
+            PerformJump();
+            return;
+        }
+
+        DoubleJumpCapability doubleJump =
+            capabilityController.Capabilities.Get<DoubleJumpCapability>();
+
+        if (doubleJump == null)
             return;
 
+        if (jumpsUsed >= doubleJump.ExtraJumps)
+            return;
+
+        jumpsUsed++;
+        PerformJump();
+    }
+
+    private void PerformJump()
+    {
         rb.linearVelocity = new Vector2(
             rb.linearVelocity.x,
             jumpForce
@@ -75,11 +98,18 @@ public class PlayerMovement : MonoBehaviour
 
     private void CheckGround()
     {
+        bool wasGrounded = isGrounded;
+
         isGrounded = Physics2D.OverlapCircle(
             groundCheck.position,
             groundCheckRadius,
             groundLayer
         );
+
+        if (!wasGrounded && isGrounded)
+        {
+            jumpsUsed = 0;
+        }
     }
 
     private void OnDrawGizmosSelected()

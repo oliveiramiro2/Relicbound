@@ -136,6 +136,7 @@ GameObject:
   - component: {fileID: 51475476}
   - component: {fileID: 51475477}
   - component: {fileID: 51475478}
+  - component: {fileID: 51475479}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -363,6 +364,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2c1888ffa632c3b4b97e70314a6e4232, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerCapabilityController
+--- !u!114 &51475479
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 51475469}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 681510034d4f1cc4593872a6c8b6eb6f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RelicManager
 --- !u!1 &485077348
 GameObject:
   m_ObjectHideFlags: 0

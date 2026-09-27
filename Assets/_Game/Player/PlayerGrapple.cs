@@ -19,7 +19,6 @@ public class PlayerGrapple : MonoBehaviour
     private GrapplePoint currentTarget;
     private GrappleRope rope;
     private Rigidbody2D rb;
-    private PlayerMovement playerMovement;
     public bool IsGrappling => isGrappling;
     private float ropeLength;
     private bool isGrappling;
@@ -30,7 +29,6 @@ public class PlayerGrapple : MonoBehaviour
         visualizer = GetComponent<GrappleVisualizer>();
         rb = GetComponent<Rigidbody2D>();
         rope = GetComponentInChildren<GrappleRope>();
-        playerMovement = GetComponent<PlayerMovement>();
     }
 
     private void Update()
@@ -60,7 +58,6 @@ public class PlayerGrapple : MonoBehaviour
             return;
 
         ApplyRopeConstraint();
-        ApplySwingForce();
         ApplySwingControl();
     }
 
@@ -176,31 +173,6 @@ public class PlayerGrapple : MonoBehaviour
         }
     }
 
-    private void ApplySwingForce()
-    {
-        float input = playerInput.MoveInput.x;
-
-        if (Mathf.Abs(input) < 0.01f)
-            return;
-
-        Vector2 playerPosition = rb.position;
-        Vector2 pointPosition = currentTarget.Position;
-
-        Vector2 direction = (
-            playerPosition - pointPosition
-        ).normalized;
-
-        Vector2 tangent = new Vector2(
-            -direction.y,
-            direction.x
-        );
-
-        if (input < 0f)
-            tangent = -tangent;
-
-        rb.linearVelocity += tangent * 0.5f;
-    }
-
     private void ApplySwingControl()
     {
         float input = playerInput.MoveInput.x;
@@ -220,16 +192,26 @@ public class PlayerGrapple : MonoBehaviour
             direction.x
         );
 
-        if (input < 0f)
-            tangent = -tangent;
+        Vector2 inputDirection = new Vector2(
+            input,
+            0f
+        );
+
+        float tangentialInput = Vector2.Dot(
+            inputDirection,
+            tangent
+        );
 
         float tangentialVelocity = Vector2.Dot(
             rb.linearVelocity,
             tangent
         );
 
-        float targetVelocity = tangentialVelocity +
-                               input * swingAcceleration * Time.fixedDeltaTime;
+        float targetVelocity =
+            tangentialVelocity +
+            tangentialInput *
+            swingAcceleration *
+            Time.fixedDeltaTime;
 
         targetVelocity = Mathf.Clamp(
             targetVelocity,
@@ -238,7 +220,10 @@ public class PlayerGrapple : MonoBehaviour
         );
 
         Vector2 radialVelocity = direction *
-            Vector2.Dot(rb.linearVelocity, direction);
+            Vector2.Dot(
+                rb.linearVelocity,
+                direction
+            );
 
         rb.linearVelocity =
             radialVelocity +

@@ -16,7 +16,10 @@ public class RelicManager : MonoBehaviour
             GetComponent<PlayerCapabilityController>();
 
         inventory = new RelicInventory();
-        equipment = new RelicEquipment(2);
+        equipment = new RelicEquipment(
+                        2,
+                        capabilityController
+                    );
     }
 
     private void Start()

@@ -12,4 +12,8 @@ public class SlotExpansionRelic : Relic
     {
         context.Equipment.AddSlots(slotAmount);
     }
+
+    public override void Remove(RelicContext context)
+    {
+    }
 }

@@ -11,4 +11,8 @@ public class SpeedRelic : Relic
             new MovementSpeedCapability(1.25f)
         );
     }
+
+    public override void Remove(RelicContext context)
+    {
+    }
 }

@@ -11,4 +11,8 @@ public class DoubleJumpRelic : Relic
             new DoubleJumpCapability()
         );
     }
+
+    public override void Remove(RelicContext context)
+    {
+    }
 }

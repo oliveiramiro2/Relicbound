@@ -42,6 +42,26 @@ public class RelicEquipment
         return true;
     }
 
+    public bool Unequip(Relic relic)
+    {
+        if (relic == null)
+            return false;
+
+        if (!equippedRelics.Contains(relic))
+            return false;
+
+        equippedRelics.Remove(relic);
+
+        RelicContext context = new RelicContext(
+            capabilityController,
+            this
+        );
+
+        relic.Remove(context);
+
+        return true;
+    }
+
     public void AddSlots(int amount)
     {
         if (amount <= 0)

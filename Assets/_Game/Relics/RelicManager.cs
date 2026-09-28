@@ -26,6 +26,7 @@ public class RelicManager : MonoBehaviour
     private void Start()
     {
         SlotExpansionRelic slot = new(1);
+        slot.Apply(new(capabilityController, equipment));
 
         Relic doubleJumpRelic = new DoubleJumpRelic();
         Relic highJumpRelic = new HighJumpRelic();
@@ -38,6 +39,11 @@ public class RelicManager : MonoBehaviour
         equipment.Equip(doubleJumpRelic);
         equipment.Equip(speedRelic);
         equipment.Equip(highJumpRelic);
+
+        foreach (Relic r in equipment.EquippedRelics)
+        {
+            Debug.Log(r);
+        }
     }
 
     public void Equip(Relic relic)

@@ -11,4 +11,8 @@ public class HighJumpRelic : Relic
             new JumpHeightCapability(1.25f)
         );
     }
+
+    public override void Remove(RelicContext context)
+    {
+    }
 }

@@ -8,4 +8,6 @@ public abstract class Relic
     }
 
     public abstract void Apply(RelicContext context);
+
+    public abstract void Remove(RelicContext context);
 }

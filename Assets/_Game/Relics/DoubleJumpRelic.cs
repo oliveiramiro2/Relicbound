@@ -5,11 +5,9 @@ public class DoubleJumpRelic : Relic
     {
     }
 
-    public override void Apply(
-        PlayerCapabilityController capabilityController
-    )
+    public override void Apply(RelicContext context)
     {
-        capabilityController.AddCapability(
+        context.CapabilityController.AddCapability(
             new DoubleJumpCapability()
         );
     }

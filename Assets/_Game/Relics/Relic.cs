@@ -7,7 +7,5 @@ public abstract class Relic
         Id = id;
     }
 
-    public abstract void Apply(
-        PlayerCapabilityController capabilityController
-    );
+    public abstract void Apply(RelicContext context);
 }

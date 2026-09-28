@@ -32,8 +32,21 @@ public class RelicEquipment
 
         equippedRelics.Add(relic);
 
-        relic.Apply(capabilityController);
+        RelicContext context = new RelicContext(
+            capabilityController,
+            this
+        );
+
+        relic.Apply(context);
 
         return true;
+    }
+
+    public void AddSlots(int amount)
+    {
+        if (amount <= 0)
+            return;
+
+        SlotCount += amount;
     }
 }

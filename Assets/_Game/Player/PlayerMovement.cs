@@ -16,6 +16,15 @@ public class PlayerMovement : MonoBehaviour
     private PlayerCapabilityController capabilityController;
     private int jumpsUsed;
 
+    [Header("Dash")]
+    [SerializeField] private float dashImpulse = 14f;
+    [SerializeField] private float dashDuration = 0.15f;
+
+    private bool canDash;
+    private bool isDashing;
+    private int facingDirection = 1;
+    private float dashTimer;
+
     [Header("Ground Check")]
     [SerializeField] private Transform groundCheck;
     [SerializeField] private float groundCheckRadius = 0.15f;
@@ -32,12 +41,17 @@ public class PlayerMovement : MonoBehaviour
         playerInput = GetComponent<PlayerInput>();
         playerGrapple = GetComponent<PlayerGrapple>();
         capabilityController = GetComponent<PlayerCapabilityController>();
+
+        canDash = true;
     }
 
     private void Update()
     {
         CheckGround();
+        UpdateFacingDirection();
         HandleJump();
+        HandleDash();
+        UpdateDash();
     }
 
     private void FixedUpdate()
@@ -45,7 +59,18 @@ public class PlayerMovement : MonoBehaviour
         if (playerGrapple.IsGrappling)
             return;
 
+        if (isDashing)
+            return;
+
         HandleMovement();
+    }
+
+    private void UpdateFacingDirection()
+    {
+        if (playerInput.MoveInput.x > 0.01f)
+            facingDirection = 1;
+        else if (playerInput.MoveInput.x < -0.01f)
+            facingDirection = -1;
     }
 
     private void HandleMovement()
@@ -100,6 +125,17 @@ public class PlayerMovement : MonoBehaviour
         PerformJump();
     }
 
+    private void HandleDash()
+    {
+        if (!playerInput.DashPressed)
+            return;
+
+        if (!canDash)
+            return;
+
+        PerformDash();
+    }
+
     private void PerformJump()
     {
         float finalJumpForce = jumpForce;
@@ -116,6 +152,36 @@ public class PlayerMovement : MonoBehaviour
         );
     }
 
+    private void PerformDash()
+    {
+        canDash = false;
+        isDashing = true;
+        dashTimer = dashDuration;
+
+        rb.linearVelocity += new Vector2(
+            dashImpulse * facingDirection,
+            0f
+        );
+    }
+
+    private void UpdateDash()
+    {
+        if (!isDashing)
+            return;
+
+        dashTimer -= Time.deltaTime;
+
+        if (dashTimer <= 0f)
+        {
+            isDashing = false;
+
+            if (isGrounded)
+            {
+                canDash = true;
+            }
+        }
+    }
+
     private void CheckGround()
     {
         bool wasGrounded = isGrounded;
@@ -129,6 +195,8 @@ public class PlayerMovement : MonoBehaviour
         if (!wasGrounded && isGrounded)
         {
             jumpsUsed = 0;
+            canDash = true;
+            isDashing = false;
         }
     }
 

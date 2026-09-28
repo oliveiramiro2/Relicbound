@@ -4,9 +4,9 @@ using UnityEngine.InputSystem;
 public class PlayerInput : MonoBehaviour
 {
     public Vector2 MoveInput { get; private set; }
-
     public bool JumpPressed { get; private set; }
     public bool GrapplePressed { get; private set; }
+    public bool DashPressed { get; private set; }
 
     private PlayerInputActions inputActions;
 
@@ -24,6 +24,7 @@ public class PlayerInput : MonoBehaviour
 
         inputActions.Player.Jump.performed += OnJump;
         inputActions.Player.Grapple.performed += OnGrapple;
+        inputActions.Player.Dash.performed += OnDash;
     }
 
     private void OnDisable()
@@ -33,6 +34,7 @@ public class PlayerInput : MonoBehaviour
 
         inputActions.Player.Jump.performed -= OnJump;
         inputActions.Player.Grapple.performed -= OnGrapple;
+        inputActions.Player.Dash.performed -= OnDash;
 
         inputActions.Player.Disable();
     }
@@ -52,9 +54,15 @@ public class PlayerInput : MonoBehaviour
         GrapplePressed = true;
     }
 
+    private void OnDash(InputAction.CallbackContext context)
+    {
+        DashPressed = true;
+    }
+
     private void LateUpdate()
     {
         JumpPressed = false;
         GrapplePressed = false;
+        DashPressed = false;
     }
 }

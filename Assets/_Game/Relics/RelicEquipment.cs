@@ -62,6 +62,14 @@ public class RelicEquipment
         return true;
     }
 
+    public bool IsEquipped(Relic relic)
+    {
+        if (relic == null)
+            return false;
+
+        return equippedRelics.Contains(relic);
+    }
+
     public bool AddSlots(int amount)
     {
         if (amount <= 0)

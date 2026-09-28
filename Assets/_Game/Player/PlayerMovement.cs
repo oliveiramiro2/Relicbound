@@ -92,12 +92,10 @@ public class PlayerMovement : MonoBehaviour
     {
         float finalJumpForce = jumpForce;
 
-        JumpHeightCapability jumpHeight =
-            capabilityController.Capabilities.Get<JumpHeightCapability>();
-
-        if (jumpHeight != null)
+        foreach (JumpHeightCapability capability in
+            capabilityController.Capabilities.GetAll<JumpHeightCapability>())
         {
-            finalJumpForce *= jumpHeight.Multiplier;
+            finalJumpForce *= capability.Multiplier;
         }
 
         rb.linearVelocity = new Vector2(

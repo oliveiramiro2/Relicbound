@@ -31,4 +31,14 @@ public class PlayerCapabilities
 
         return null;
     }
+
+    public IEnumerable<T> GetAll<T>()
+    where T : PlayerCapability
+    {
+        foreach (PlayerCapability capability in capabilities)
+        {
+            if (capability is T typedCapability)
+                yield return typedCapability;
+        }
+    }
 }

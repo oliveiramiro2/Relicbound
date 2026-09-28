@@ -25,13 +25,18 @@ public class RelicManager : MonoBehaviour
     private void Start()
     {
         Relic doubleJumpRelic = new DoubleJumpRelic();
-        Relic highJumpRelic = new HighJumpRelic();
+        Relic highJumpRelic1 = new HighJumpRelic();
+        Relic highJumpRelic2 = new HighJumpRelic();
 
         inventory.Add(doubleJumpRelic);
-        inventory.Add(highJumpRelic);
+        inventory.Add(highJumpRelic1);
+        inventory.Add(highJumpRelic2);
 
-        equipment.Equip(doubleJumpRelic);
-        equipment.Equip(highJumpRelic);
+        bool first = equipment.Equip(highJumpRelic1);
+        bool second = equipment.Equip(highJumpRelic1);
+        bool third = equipment.Equip(highJumpRelic2);
+
+        Debug.Log($"first: {first} - second: {second} - third: {third}");
     }
 
     public void Equip(Relic relic)

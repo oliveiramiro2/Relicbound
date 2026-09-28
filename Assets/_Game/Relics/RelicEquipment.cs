@@ -27,6 +27,9 @@ public class RelicEquipment
         if (equippedRelics.Count >= SlotCount)
             return false;
 
+        if (equippedRelics.Contains(relic))
+            return false;
+
         equippedRelics.Add(relic);
 
         relic.Apply(capabilityController);

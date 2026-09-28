@@ -46,13 +46,17 @@ public class RelicManager : MonoBehaviour
         StartCoroutine(RemoveRelic(highJumpRelic1));
     }
 
-    private IEnumerator RemoveRelic(Relic highJumpRelic)
+    private IEnumerator RemoveRelic(Relic relic)
     {
         yield return new WaitForSeconds(5);
-        equipment.Unequip(highJumpRelic);
-        foreach (Relic r in equipment.EquippedRelics)
+
+        bool removed = UnequipRelic(relic);
+
+        Debug.Log($"Unequip result: {removed}");
+
+        foreach (Relic equippedRelic in equipment.EquippedRelics)
         {
-            Debug.Log(r);
+            Debug.Log(equippedRelic.Id);
         }
     }
 
@@ -65,5 +69,13 @@ public class RelicManager : MonoBehaviour
             return false;
 
         return equipment.Equip(relic);
+    }
+
+    public bool UnequipRelic(Relic relic)
+    {
+        if (relic == null)
+            return false;
+
+        return equipment.Unequip(relic);
     }
 }

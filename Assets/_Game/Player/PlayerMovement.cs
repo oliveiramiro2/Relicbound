@@ -20,7 +20,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float dashImpulse = 14f;
     [SerializeField] private float dashDuration = 0.15f;
 
-    private bool canDash;
+    private int dashesAvailable;
     private bool isDashing;
     private int facingDirection = 1;
     private float dashTimer;
@@ -42,7 +42,7 @@ public class PlayerMovement : MonoBehaviour
         playerGrapple = GetComponent<PlayerGrapple>();
         capabilityController = GetComponent<PlayerCapabilityController>();
 
-        canDash = true;
+        dashesAvailable = 1;
     }
 
     private void Update()
@@ -130,7 +130,7 @@ public class PlayerMovement : MonoBehaviour
         if (!playerInput.DashPressed)
             return;
 
-        if (!canDash)
+        if (dashesAvailable <= 0)
             return;
 
         PerformDash();
@@ -154,7 +154,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void PerformDash()
     {
-        canDash = false;
+        dashesAvailable--;
         isDashing = true;
         dashTimer = dashDuration;
 
@@ -185,7 +185,7 @@ public class PlayerMovement : MonoBehaviour
 
             if (isGrounded)
             {
-                canDash = true;
+                dashesAvailable = GetMaxDashes();
             }
         }
     }
@@ -228,9 +228,22 @@ public class PlayerMovement : MonoBehaviour
         if (!wasGrounded && isGrounded)
         {
             jumpsUsed = 0;
-            canDash = true;
+            dashesAvailable = GetMaxDashes();
             isDashing = false;
         }
+    }
+
+    private int GetMaxDashes()
+    {
+        int maxDashes = 1;
+
+        foreach (ExtraDashCapability capability in
+            capabilityController.Capabilities.GetAll<ExtraDashCapability>())
+        {
+            maxDashes += capability.ExtraDashes;
+        }
+
+        return maxDashes;
     }
 
     private void OnDrawGizmosSelected()

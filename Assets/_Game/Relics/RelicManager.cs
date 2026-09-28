@@ -37,6 +37,7 @@ public class RelicManager : MonoBehaviour
         Relic longDashRelic1 = new LongDashRelic();
         Relic longDashRelic2 = new LongDashRelic();
         Relic upwardDashRelic = new UpwardDashRelic();
+        Relic extraDashRelic = new ExtraDashRelic();
 
         AddRelic(doubleJumpRelic);
         AddRelic(highJumpRelic1);
@@ -45,9 +46,10 @@ public class RelicManager : MonoBehaviour
         AddRelic(longDashRelic1);
         AddRelic(longDashRelic2);
         AddRelic(upwardDashRelic);
+        AddRelic(extraDashRelic);
 
-        EquipRelic(speedRelic);
-        EquipRelic(longDashRelic2);
+        EquipRelic(extraDashRelic);
+        EquipRelic(doubleJumpRelic);
         EquipRelic(longDashRelic1);
         EquipRelic(upwardDashRelic);
 

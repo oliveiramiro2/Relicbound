@@ -14,14 +14,11 @@ public class RelicInventory
         relics.Add(relic);
     }
 
-    public bool Contains(string relicId)
+    public bool Contains(Relic relic)
     {
-        foreach (Relic relic in relics)
-        {
-            if (relic.Id == relicId)
-                return true;
-        }
+        if (relic == null)
+            return false;
 
-        return false;
+        return relics.Contains(relic);
     }
 }

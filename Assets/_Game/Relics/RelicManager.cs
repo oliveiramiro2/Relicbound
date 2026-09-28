@@ -23,7 +23,7 @@ public class RelicManager : MonoBehaviour
 
     private void Start()
     {
-        equipment.AddSlots(1);
+        equipment.AddSlots(2);
 
         TestRelicSystem();
     }
@@ -34,28 +34,29 @@ public class RelicManager : MonoBehaviour
         Relic highJumpRelic1 = new HighJumpRelic();
         Relic highJumpRelic2 = new HighJumpRelic();
         Relic speedRelic = new SpeedRelic();
-        Relic longDashRelic = new LongDashRelic();
+        Relic longDashRelic1 = new LongDashRelic();
+        Relic longDashRelic2 = new LongDashRelic();
+        Relic upwardDashRelic = new UpwardDashRelic();
 
         AddRelic(doubleJumpRelic);
         AddRelic(highJumpRelic1);
         AddRelic(highJumpRelic2);
         AddRelic(speedRelic);
-        AddRelic(longDashRelic);
+        AddRelic(longDashRelic1);
+        AddRelic(longDashRelic2);
+        AddRelic(upwardDashRelic);
 
-        bool speedEquipped = EquipRelic(speedRelic);
-        bool highJump1Equipped = EquipRelic(highJumpRelic1);
-        bool highJump2Equipped = EquipRelic(longDashRelic);
-
-        Debug.Log($"Speed equipped: {speedEquipped}");
-        Debug.Log($"HighJump 1 equipped: {highJump1Equipped}");
-        Debug.Log($"HighJump 2 equipped: {highJump2Equipped}");
+        EquipRelic(speedRelic);
+        EquipRelic(longDashRelic2);
+        EquipRelic(longDashRelic1);
+        EquipRelic(upwardDashRelic);
 
         foreach (Relic relic in equipment.EquippedRelics)
         {
             Debug.Log($"Equipped: {relic.Id}");
         }
 
-        StartCoroutine(RemoveRelic(longDashRelic));
+        //StartCoroutine(RemoveRelic(speedRelic));
     }
 
     private IEnumerator RemoveRelic(Relic relic)

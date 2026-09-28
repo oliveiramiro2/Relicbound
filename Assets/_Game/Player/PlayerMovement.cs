@@ -166,10 +166,10 @@ public class PlayerMovement : MonoBehaviour
             finalDashImpulse *= capability.Multiplier;
         }
 
-        rb.linearVelocity += new Vector2(
-            finalDashImpulse * facingDirection,
-            0f
-        );
+        Vector2 dashDirection = GetDashDirection();
+
+        rb.linearVelocity +=
+            dashDirection * finalDashImpulse;
     }
 
     private void UpdateDash()
@@ -188,6 +188,31 @@ public class PlayerMovement : MonoBehaviour
                 canDash = true;
             }
         }
+    }
+
+    private Vector2 GetDashDirection()
+    {
+        Vector2 input = playerInput.MoveInput;
+
+        if (!capabilityController.Capabilities.Has<DirectionalDashCapability>())
+        {
+            if (input.x > 0.01f)
+                return Vector2.right;
+
+            if (input.x < -0.01f)
+                return Vector2.left;
+
+            return facingDirection == 1
+                ? Vector2.right
+                : Vector2.left;
+        }
+
+        if (input.sqrMagnitude > 0.01f)
+            return input.normalized;
+
+        return facingDirection == 1
+            ? Vector2.right
+            : Vector2.left;
     }
 
     private void CheckGround()

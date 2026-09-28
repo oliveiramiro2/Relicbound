@@ -34,15 +34,17 @@ public class RelicManager : MonoBehaviour
         Relic highJumpRelic1 = new HighJumpRelic();
         Relic highJumpRelic2 = new HighJumpRelic();
         Relic speedRelic = new SpeedRelic();
+        Relic longDashRelic = new LongDashRelic();
 
         AddRelic(doubleJumpRelic);
         AddRelic(highJumpRelic1);
         AddRelic(highJumpRelic2);
         AddRelic(speedRelic);
+        AddRelic(longDashRelic);
 
         bool speedEquipped = EquipRelic(speedRelic);
         bool highJump1Equipped = EquipRelic(highJumpRelic1);
-        bool highJump2Equipped = EquipRelic(highJumpRelic2);
+        bool highJump2Equipped = EquipRelic(longDashRelic);
 
         Debug.Log($"Speed equipped: {speedEquipped}");
         Debug.Log($"HighJump 1 equipped: {highJump1Equipped}");
@@ -53,12 +55,12 @@ public class RelicManager : MonoBehaviour
             Debug.Log($"Equipped: {relic.Id}");
         }
 
-        StartCoroutine(RemoveRelic(highJumpRelic1));
+        StartCoroutine(RemoveRelic(longDashRelic));
     }
 
     private IEnumerator RemoveRelic(Relic relic)
     {
-        yield return new WaitForSeconds(5);
+        yield return new WaitForSeconds(15);
 
         bool removed = UnequipRelic(relic);
 

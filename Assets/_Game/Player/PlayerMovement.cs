@@ -158,8 +158,16 @@ public class PlayerMovement : MonoBehaviour
         isDashing = true;
         dashTimer = dashDuration;
 
+        float finalDashImpulse = dashImpulse;
+
+        foreach (DashImpulseCapability capability in
+            capabilityController.Capabilities.GetAll<DashImpulseCapability>())
+        {
+            finalDashImpulse *= capability.Multiplier;
+        }
+
         rb.linearVelocity += new Vector2(
-            dashImpulse * facingDirection,
+            finalDashImpulse * facingDirection,
             0f
         );
     }

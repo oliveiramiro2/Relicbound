@@ -313,7 +313,7 @@ MonoBehaviour:
   acceleration: 30
   deceleration: 40
   jumpForce: 12
-  dashSpeed: 14
+  dashImpulse: 14
   dashDuration: 0.15
   groundCheck: {fileID: 1330002226}
   groundCheckRadius: 0.15
@@ -1988,9 +1988,9 @@ MonoBehaviour:
   Damping: {x: 1, y: 1, z: 1}
   Lookahead:
     Enabled: 1
-    Time: 0.5
-    Smoothing: 1
-    IgnoreY: 0
+    Time: 1
+    Smoothing: 5
+    IgnoreY: 1
 --- !u!114 &2047356042
 MonoBehaviour:
   m_ObjectHideFlags: 0

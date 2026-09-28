@@ -50,15 +50,27 @@ public class PlayerMovement : MonoBehaviour
 
     private void HandleMovement()
     {
-        float targetSpeed = playerInput.MoveInput.x * moveSpeed;
+        float finalMoveSpeed = moveSpeed;
 
-        float speedDifference = targetSpeed - rb.linearVelocity.x;
+        foreach (MovementSpeedCapability capability in
+            capabilityController.Capabilities.GetAll<MovementSpeedCapability>())
+        {
+            finalMoveSpeed *= capability.Multiplier;
+        }
 
-        float accelerationRate = Mathf.Abs(targetSpeed) > 0.01f
-            ? acceleration
-            : deceleration;
+        float targetSpeed =
+            playerInput.MoveInput.x * finalMoveSpeed;
 
-        float movement = speedDifference * accelerationRate;
+        float speedDifference =
+            targetSpeed - rb.linearVelocity.x;
+
+        float accelerationRate =
+            Mathf.Abs(targetSpeed) > 0.01f
+                ? acceleration
+                : deceleration;
+
+        float movement =
+            speedDifference * accelerationRate;
 
         rb.AddForce(Vector2.right * movement);
     }

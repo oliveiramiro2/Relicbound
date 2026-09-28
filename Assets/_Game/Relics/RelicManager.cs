@@ -25,30 +25,38 @@ public class RelicManager : MonoBehaviour
     {
         equipment.AddSlots(1);
 
+        TestRelicSystem();
+    }
+
+    private void TestRelicSystem()
+    {
         Relic doubleJumpRelic = new DoubleJumpRelic();
         Relic highJumpRelic1 = new HighJumpRelic();
         Relic highJumpRelic2 = new HighJumpRelic();
         Relic speedRelic = new SpeedRelic();
 
-        inventory.Add(doubleJumpRelic);
-        inventory.Add(highJumpRelic1);
-        inventory.Add(speedRelic);
+        AddRelic(doubleJumpRelic);
+        AddRelic(highJumpRelic1);
+        AddRelic(highJumpRelic2);
+        AddRelic(speedRelic);
 
-        EquipRelic(speedRelic);
-        EquipRelic(highJumpRelic1);
-        EquipRelic(highJumpRelic2);
+        bool speedEquipped = EquipRelic(speedRelic);
+        bool highJump1Equipped = EquipRelic(highJumpRelic1);
+        bool highJump2Equipped = EquipRelic(highJumpRelic2);
 
-        inventory.Add(highJumpRelic2);
+        Debug.Log($"Speed equipped: {speedEquipped}");
+        Debug.Log($"HighJump 1 equipped: {highJump1Equipped}");
+        Debug.Log($"HighJump 2 equipped: {highJump2Equipped}");
 
-        foreach (Relic r in equipment.EquippedRelics)
+        foreach (Relic relic in equipment.EquippedRelics)
         {
-            Debug.Log(r);
+            Debug.Log($"Equipped: {relic.Id}");
         }
 
-        StartCoroutine(RemoveRelic(highJumpRelic1, highJumpRelic2));
+        StartCoroutine(RemoveRelic(highJumpRelic1));
     }
 
-    private IEnumerator RemoveRelic(Relic relic, Relic relic2)
+    private IEnumerator RemoveRelic(Relic relic)
     {
         yield return new WaitForSeconds(5);
 
@@ -56,12 +64,19 @@ public class RelicManager : MonoBehaviour
 
         Debug.Log($"Unequip result: {removed}");
 
-        EquipRelic(relic2);
-
         foreach (Relic equippedRelic in equipment.EquippedRelics)
         {
             Debug.Log(equippedRelic.Id);
         }
+    }
+
+    public bool AddRelic(Relic relic)
+    {
+        if (relic == null)
+            return false;
+
+        inventory.Add(relic);
+        return true;
     }
 
     public bool EquipRelic(Relic relic)

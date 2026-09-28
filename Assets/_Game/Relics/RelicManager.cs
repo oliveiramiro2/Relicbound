@@ -34,9 +34,9 @@ public class RelicManager : MonoBehaviour
         inventory.Add(highJumpRelic1);
         inventory.Add(speedRelic);
 
-        equipment.Equip(speedRelic);
-        equipment.Equip(highJumpRelic1);
-        equipment.Equip(highJumpRelic2);
+        EquipRelic(speedRelic);
+        EquipRelic(highJumpRelic1);
+        EquipRelic(highJumpRelic2);
 
         foreach (Relic r in equipment.EquippedRelics)
         {
@@ -54,5 +54,16 @@ public class RelicManager : MonoBehaviour
         {
             Debug.Log(r);
         }
+    }
+
+    public bool EquipRelic(Relic relic)
+    {
+        if (relic == null)
+            return false;
+
+        if (!inventory.Contains(relic.Id))
+            return false;
+
+        return equipment.Equip(relic);
     }
 }

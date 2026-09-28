@@ -13,4 +13,9 @@ public class PlayerCapabilityController : MonoBehaviour
     {
         Capabilities.Add(capability);
     }
+
+    public bool RemoveCapability(PlayerCapability capability)
+    {
+        return Capabilities.Remove(capability);
+    }
 }

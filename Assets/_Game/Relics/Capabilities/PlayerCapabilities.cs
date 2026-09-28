@@ -10,6 +10,14 @@ public class PlayerCapabilities
         capabilities.Add(capability);
     }
 
+    public bool Remove(PlayerCapability capability)
+    {
+        if (capability == null)
+            return false;
+
+        return capabilities.Remove(capability);
+    }
+
     public bool Has<T>() where T : PlayerCapability
     {
         foreach (PlayerCapability capability in capabilities)

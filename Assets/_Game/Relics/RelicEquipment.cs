@@ -62,11 +62,12 @@ public class RelicEquipment
         return true;
     }
 
-    public void AddSlots(int amount)
+    public bool AddSlots(int amount)
     {
         if (amount <= 0)
-            return;
+            return false;
 
         SlotCount += amount;
+        return true;
     }
 }

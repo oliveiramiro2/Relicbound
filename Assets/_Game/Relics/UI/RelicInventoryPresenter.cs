@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(RelicManager))]
+[RequireComponent(typeof(RelicLoadout))]
 public class RelicInventoryPresenter : MonoBehaviour
 {
   [SerializeField] private RelicDatabase database;
@@ -9,6 +10,7 @@ public class RelicInventoryPresenter : MonoBehaviour
   [SerializeField] private Transform relicContainer;
 
   private RelicManager relicManager;
+  private RelicLoadout relicLoadout;
 
   public IReadOnlyList<Relic> Relics =>
       relicManager.Relics;
@@ -22,6 +24,7 @@ public class RelicInventoryPresenter : MonoBehaviour
   private void Awake()
   {
     relicManager = GetComponent<RelicManager>();
+    relicLoadout = GetComponent<RelicLoadout>();
   }
 
   private void OnEnable()
@@ -70,15 +73,28 @@ public class RelicInventoryPresenter : MonoBehaviour
       if (data == null)
         continue;
 
-      RelicSlotView slot = Instantiate(relicSlotPrefab, relicContainer);
-
-      bool isEquipped = IsEquipped(relic);
+      RelicSlotView slot =
+          Instantiate(relicSlotPrefab, relicContainer);
 
       slot.Setup(
+          relic,
           data,
-          isEquipped
+          IsEquipped(relic)
       );
+
+      slot.Clicked += OnRelicClicked;
     }
+  }
+
+  private void OnRelicClicked(Relic relic)
+  {
+    if (IsEquipped(relic))
+    {
+      relicLoadout.Unequip(relic);
+      return;
+    }
+
+    relicLoadout.Equip(relic);
   }
 
   private bool IsEquipped(Relic relic)

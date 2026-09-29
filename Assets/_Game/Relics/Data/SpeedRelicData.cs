@@ -6,6 +6,8 @@ using UnityEngine;
 )]
 public class SpeedRelicData : RelicData
 {
+  public override string Id => "relic.speed";
+
   public override Relic CreateRuntimeRelic()
   {
     return new SpeedRelic();

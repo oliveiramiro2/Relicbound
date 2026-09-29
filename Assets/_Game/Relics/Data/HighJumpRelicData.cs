@@ -6,6 +6,8 @@ using UnityEngine;
 )]
 public class HighJumpRelicData : RelicData
 {
+  public override string Id => "relic.high_jump";
+
   public override Relic CreateRuntimeRelic()
   {
     return new HighJumpRelic();

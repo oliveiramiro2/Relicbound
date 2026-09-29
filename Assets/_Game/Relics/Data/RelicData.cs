@@ -2,9 +2,7 @@ using UnityEngine;
 
 public abstract class RelicData : ScriptableObject
 {
-    [SerializeField] private string id;
-
-    public string Id => id;
+    public abstract string Id { get; }
 
     public abstract Relic CreateRuntimeRelic();
 }

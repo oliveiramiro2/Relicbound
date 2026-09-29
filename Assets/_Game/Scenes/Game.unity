@@ -378,6 +378,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 681510034d4f1cc4593872a6c8b6eb6f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RelicManager
+  testRelicData: {fileID: 11400000, guid: 78e0a62fbf3bb1d4896d35105f595713, type: 2}
 --- !u!1 &485077348
 GameObject:
   m_ObjectHideFlags: 0

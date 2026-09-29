@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -7,6 +8,11 @@ public class RelicManager : MonoBehaviour
     private PlayerCapabilityController capabilityController;
     private RelicInventory inventory;
     private RelicEquipment equipment;
+    public event Action<Relic> RelicAdded;
+    public event Action<Relic> RelicRemoved;
+    public event Action<Relic> RelicEquipped;
+    public event Action<Relic> RelicUnequipped;
+
     public int RelicCount =>
     Relics.Count;
 
@@ -38,6 +44,9 @@ public class RelicManager : MonoBehaviour
             return false;
 
         inventory.Add(relic);
+
+        RelicAdded?.Invoke(relic);
+
         return true;
     }
 
@@ -49,7 +58,14 @@ public class RelicManager : MonoBehaviour
         if (equipment.IsEquipped(relic))
             return false;
 
-        return inventory.Remove(relic);
+        bool removed = inventory.Remove(relic);
+
+        if (!removed)
+            return false;
+
+        RelicRemoved?.Invoke(relic);
+
+        return true;
     }
 
     public bool EquipRelic(Relic relic)
@@ -60,7 +76,14 @@ public class RelicManager : MonoBehaviour
         if (!inventory.Contains(relic))
             return false;
 
-        return equipment.Equip(relic);
+        bool equipped = equipment.Equip(relic);
+
+        if (!equipped)
+            return false;
+
+        RelicEquipped?.Invoke(relic);
+
+        return true;
     }
 
     public bool UnequipRelic(Relic relic)
@@ -68,7 +91,14 @@ public class RelicManager : MonoBehaviour
         if (relic == null)
             return false;
 
-        return equipment.Unequip(relic);
+        bool unequipped = equipment.Unequip(relic);
+
+        if (!unequipped)
+            return false;
+
+        RelicUnequipped?.Invoke(relic);
+
+        return true;
     }
 
     public void AddRelicSlots(int amount)

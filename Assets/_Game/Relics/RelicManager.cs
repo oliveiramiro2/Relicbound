@@ -7,7 +7,8 @@ public class RelicManager : MonoBehaviour
     private PlayerCapabilityController capabilityController;
     private RelicInventory inventory;
     private RelicEquipment equipment;
-    [SerializeField] private RelicData testRelicData;
+    public int RelicCount =>
+    Relics.Count;
 
     public IReadOnlyList<Relic> Relics =>
         inventory.Relics;
@@ -29,11 +30,6 @@ public class RelicManager : MonoBehaviour
             2,
             capabilityController
         );
-
-        Relic testRelic = testRelicData.CreateRuntimeRelic();
-
-        Debug.Log($"Relic criada: {testRelic.Id}");
-        Debug.Log($"Tipo: {testRelic.GetType().Name}");
     }
 
     public bool AddRelic(Relic relic)

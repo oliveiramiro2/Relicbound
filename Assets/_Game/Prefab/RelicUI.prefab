@@ -150,7 +150,7 @@ GameObject:
   - component: {fileID: 8172865567965638515}
   - component: {fileID: 5514852846969235687}
   m_Layer: 5
-  m_Name: Relic
+  m_Name: RelicUI
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

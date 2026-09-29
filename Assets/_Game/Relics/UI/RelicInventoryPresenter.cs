@@ -4,6 +4,8 @@ using UnityEngine;
 [RequireComponent(typeof(RelicManager))]
 public class RelicInventoryPresenter : MonoBehaviour
 {
+  [SerializeField] private RelicDatabase database;
+
   private RelicManager relicManager;
 
   public IReadOnlyList<Relic> Relics =>
@@ -34,6 +36,17 @@ public class RelicInventoryPresenter : MonoBehaviour
     relicManager.RelicRemoved -= OnInventoryChanged;
     relicManager.RelicEquipped -= OnInventoryChanged;
     relicManager.RelicUnequipped -= OnInventoryChanged;
+  }
+
+  public RelicData GetData(Relic relic)
+  {
+    if (relic == null)
+      return null;
+
+    if (database == null)
+      return null;
+
+    return database.GetById(relic.Id);
   }
 
   private void OnInventoryChanged(Relic relic)

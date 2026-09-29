@@ -12,4 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9bc04e79afa47444eaf40b90b44767ca, type: 3}
   m_Name: RelicDatabase
   m_EditorClassIdentifier: Assembly-CSharp::RelicDatabase
-  relics: []
+  relics:
+  - {fileID: 11400000, guid: 78e0a62fbf3bb1d4896d35105f595713, type: 2}
+  - {fileID: 11400000, guid: 116c709f1e09f38408435ca008d8d96b, type: 2}

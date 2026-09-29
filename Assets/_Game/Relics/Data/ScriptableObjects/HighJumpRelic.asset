@@ -12,4 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ffd77f608e81cc44ca3c52d0262ff777, type: 3}
   m_Name: HighJumpRelic
   m_EditorClassIdentifier: Assembly-CSharp::HighJumpRelicData
-  id: relic.high_jump
+  displayName: Salto Alto
+  description: Aumenta a altura do salto.
+  icon: {fileID: 10907, guid: 0000000000000000f000000000000000, type: 0}

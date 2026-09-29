@@ -12,4 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e0ad5e29a41f0314d8592e7467284bba, type: 3}
   m_Name: SpeedRelic
   m_EditorClassIdentifier: Assembly-CSharp::SpeedRelicData
-  id: relic.speed
+  displayName: Velocidade Aumentada
+  description: Aumenta ligeiramente a velocidade de movimento.
+  icon: {fileID: 10907, guid: 0000000000000000f000000000000000, type: 0}

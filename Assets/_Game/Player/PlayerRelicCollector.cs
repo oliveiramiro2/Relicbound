@@ -5,8 +5,6 @@ public class PlayerRelicCollector : MonoBehaviour
 {
   private RelicManager relicManager;
 
-  [SerializeField] private RelicData relicData;
-
   private void Awake()
   {
     relicManager = GetComponent<RelicManager>();

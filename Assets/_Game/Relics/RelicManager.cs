@@ -46,7 +46,7 @@ public class RelicManager : MonoBehaviour
         inventory.Add(relic);
 
         RelicAdded?.Invoke(relic);
-
+        
         return true;
     }
 

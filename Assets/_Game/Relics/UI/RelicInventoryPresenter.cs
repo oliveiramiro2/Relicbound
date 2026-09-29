@@ -5,6 +5,8 @@ using UnityEngine;
 public class RelicInventoryPresenter : MonoBehaviour
 {
   [SerializeField] private RelicDatabase database;
+  [SerializeField] private RelicSlotView relicSlotPrefab;
+  [SerializeField] private Transform relicContainer;
 
   private RelicManager relicManager;
 
@@ -56,6 +58,37 @@ public class RelicInventoryPresenter : MonoBehaviour
 
   private void Refresh()
   {
-    // A UI será atualizada aqui.
+    foreach (Transform child in relicContainer)
+    {
+      Destroy(child.gameObject);
+    }
+
+    foreach (Relic relic in Relics)
+    {
+      RelicData data = GetData(relic);
+
+      if (data == null)
+        continue;
+
+      RelicSlotView slot = Instantiate(relicSlotPrefab, relicContainer);
+
+      bool isEquipped = IsEquipped(relic);
+
+      slot.Setup(
+          data,
+          isEquipped
+      );
+    }
+  }
+
+  private bool IsEquipped(Relic relic)
+  {
+    foreach (Relic equippedRelic in EquippedRelics)
+    {
+      if (equippedRelic == relic)
+        return true;
+    }
+
+    return false;
   }
 }

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 [RequireComponent(typeof(RelicManager))]
@@ -6,8 +7,13 @@ using UnityEngine;
 public class RelicInventoryPresenter : MonoBehaviour
 {
   [SerializeField] private RelicDatabase database;
+
   [SerializeField] private RelicSlotView relicSlotPrefab;
-  [SerializeField] private Transform relicContainer;
+
+  [SerializeField] private Transform inventoryContainer;
+  [SerializeField] private Transform equipmentContainer;
+
+  [SerializeField] private TMP_Text slotCountText;
 
   private RelicManager relicManager;
   private RelicLoadout relicLoadout;
@@ -61,10 +67,14 @@ public class RelicInventoryPresenter : MonoBehaviour
 
   private void Refresh()
   {
-    foreach (Transform child in relicContainer)
-    {
-      Destroy(child.gameObject);
-    }
+    RefreshInventory();
+    RefreshEquipment();
+    RefreshSlotCount();
+  }
+
+  private void RefreshInventory()
+  {
+    ClearContainer(inventoryContainer);
 
     foreach (Relic relic in Relics)
     {
@@ -73,16 +83,62 @@ public class RelicInventoryPresenter : MonoBehaviour
       if (data == null)
         continue;
 
-      RelicSlotView slot =
-          Instantiate(relicSlotPrefab, relicContainer);
-
-      slot.Setup(
+      CreateSlot(
+          inventoryContainer,
           relic,
-          data,
-          IsEquipped(relic)
+          data
       );
+    }
+  }
 
-      slot.Clicked += OnRelicClicked;
+  private void RefreshEquipment()
+  {
+    ClearContainer(equipmentContainer);
+
+    foreach (Relic relic in EquippedRelics)
+    {
+      RelicData data = GetData(relic);
+
+      if (data == null)
+        continue;
+
+      CreateSlot(
+          equipmentContainer,
+          relic,
+          data
+      );
+    }
+  }
+
+  private void RefreshSlotCount()
+  {
+    slotCountText.text =
+        $"Slots: {EquippedRelics.Count} / {RelicSlots}";
+  }
+
+  private void CreateSlot(
+      Transform container,
+      Relic relic,
+      RelicData data
+  )
+  {
+    RelicSlotView slot =
+        Instantiate(relicSlotPrefab, container);
+
+    slot.Setup(
+        relic,
+        data,
+        IsEquipped(relic)
+    );
+
+    slot.Clicked += OnRelicClicked;
+  }
+
+  private void ClearContainer(Transform container)
+  {
+    foreach (Transform child in container)
+    {
+      Destroy(child.gameObject);
     }
   }
 

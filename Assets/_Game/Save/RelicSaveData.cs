@@ -5,8 +5,7 @@ using System.Collections.Generic;
 public class RelicSaveData
 {
     public List<string> inventoryRelicIds = new();
-
     public List<string> equippedRelicIds = new();
 
-    public int relicSlots;
+    public int slotCount;
 }

@@ -46,7 +46,7 @@ public class RelicManager : MonoBehaviour
         inventory.Add(relic);
 
         RelicAdded?.Invoke(relic);
-        
+
         return true;
     }
 
@@ -104,5 +104,13 @@ public class RelicManager : MonoBehaviour
     public void AddRelicSlots(int amount)
     {
         equipment.AddSlots(amount);
+    }
+
+    public bool IsRelicEquipped(Relic relic)
+    {
+        if (relic == null)
+            return false;
+
+        return equipment.IsEquipped(relic);
     }
 }

@@ -432,10 +432,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 51475469}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6137accf5c949f34a81bd62f2e43ffe5, type: 3}
+  m_Script: {fileID: 11500000, guid: cfd6eada5bc7f2441a8b88311a2ccdfc, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::RelicSaveDebug
-  database: {fileID: 11400000, guid: d421671f9ab37d64581fa3c418d37fbe, type: 2}
+  m_EditorClassIdentifier: Assembly-CSharp::GameSaveController
+  relicDatabase: {fileID: 11400000, guid: d421671f9ab37d64581fa3c418d37fbe, type: 2}
 --- !u!1 &205277118
 GameObject:
   m_ObjectHideFlags: 0
@@ -909,7 +909,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &361455312
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2402,7 +2402,7 @@ Canvas:
   m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 100
   m_TargetDisplay: 0
 --- !u!224 &1296636842
 RectTransform:

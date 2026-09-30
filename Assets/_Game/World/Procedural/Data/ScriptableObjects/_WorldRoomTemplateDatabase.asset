@@ -10,6 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a4848cab3e0c9e54481c0bdac57e9550, type: 3}
-  m_Name: WorldRoomTemplateDatabase
+  m_Name: _WorldRoomTemplateDatabase
   m_EditorClassIdentifier: Assembly-CSharp::WorldRoomTemplateDatabase
-  templates: []
+  templates:
+  - {fileID: 11400000, guid: c2788b1aa88c03140aa6c18e272f1899, type: 2}
+  - {fileID: 11400000, guid: bd5107c62c0a7d04ab198c0284d956e4, type: 2}
+  - {fileID: 11400000, guid: fb800e230c7a21b449baba092bd760ee, type: 2}
+  - {fileID: 11400000, guid: e6b9947a196db1840aa9a74944f4bae1, type: 2}
+  - {fileID: 11400000, guid: 7d80b371d4eafd442ba5baa24ee0bfdc, type: 2}

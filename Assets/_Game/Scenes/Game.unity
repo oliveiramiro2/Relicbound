@@ -2113,11 +2113,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 1695766728}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bd03184bc4b7d8d49851fbd0366b5128, type: 3}
+  m_Script: {fileID: 11500000, guid: 9eee116cc49a2004a99b99c4ee60f03b, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::WorldLayoutDebug
-  seed: 54321
-  roomSize: 1
+  m_EditorClassIdentifier: Assembly-CSharp::WorldTemplateDebug
+  seed: 12345
+  database: {fileID: 11400000, guid: 8509852c17e72984fa82e96c2c7f835c, type: 2}
 --- !u!1 &1834759756
 GameObject:
   m_ObjectHideFlags: 0

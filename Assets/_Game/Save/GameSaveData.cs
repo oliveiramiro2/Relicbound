@@ -4,4 +4,5 @@ using System;
 public class GameSaveData
 {
   public RelicSaveData relics;
+  public PlayerSaveData player;
 }

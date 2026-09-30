@@ -5,4 +5,5 @@ public class GameSaveData
 {
   public RelicSaveData relics;
   public PlayerSaveData player;
+  public WorldSaveData world;
 }

@@ -11,7 +11,7 @@ public class SaveSystem
           FileName
       );
 
-  public void Save(RelicSaveData data)
+  public void Save(GameSaveData data)
   {
     if (data == null)
       return;
@@ -31,7 +31,7 @@ public class SaveSystem
     );
   }
 
-  public RelicSaveData Load()
+  public GameSaveData Load()
   {
     if (!File.Exists(SavePath))
     {
@@ -46,8 +46,8 @@ public class SaveSystem
         SavePath
     );
 
-    RelicSaveData data =
-        JsonUtility.FromJson<RelicSaveData>(
+    GameSaveData data =
+        JsonUtility.FromJson<GameSaveData>(
             json
         );
 

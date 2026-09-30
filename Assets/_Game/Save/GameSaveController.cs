@@ -27,20 +27,28 @@ public class GameSaveController : MonoBehaviour
 
   public void SaveGame()
   {
-    RelicSaveData data =
+    GameSaveData gameSaveData =
+        new GameSaveData();
+
+    gameSaveData.relics =
         relicSaveService.Capture();
 
-    saveSystem.Save(data);
+    saveSystem.Save(gameSaveData);
   }
 
   public bool LoadGame()
   {
-    RelicSaveData data =
+    GameSaveData gameSaveData =
         saveSystem.Load();
 
-    if (data == null)
+    if (gameSaveData == null)
       return false;
 
-    return relicSaveService.Restore(data);
+    if (gameSaveData.relics == null)
+      return false;
+
+    return relicSaveService.Restore(
+        gameSaveData.relics
+    );
   }
 }

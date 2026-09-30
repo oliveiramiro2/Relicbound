@@ -8,7 +8,7 @@ public class RelicSaveDebug : MonoBehaviour
 
   private RelicManager relicManager;
   private RelicSaveService saveService;
-
+  private SaveSystem saveSystem;
   private RelicSaveData cachedSave;
 
   private void Awake()
@@ -19,6 +19,8 @@ public class RelicSaveDebug : MonoBehaviour
         relicManager,
         database
     );
+
+    saveSystem = new SaveSystem();
   }
 
   private void Update()
@@ -46,21 +48,26 @@ public class RelicSaveDebug : MonoBehaviour
     Debug.Log(
         $"SAVE CAPTURED:\n{json}"
     );
+
+    saveSystem.Save(cachedSave);
   }
 
   private void Restore()
   {
-    if (cachedSave == null)
+    RelicSaveData loadedData =
+        saveSystem.Load();
+
+    if (loadedData == null)
     {
       Debug.LogWarning(
-          "Nenhum save foi capturado."
+          "Nenhum save encontrado."
       );
 
       return;
     }
 
     bool restored =
-        saveService.Restore(cachedSave);
+        saveService.Restore(loadedData);
 
     Debug.Log(
         $"SAVE RESTORED: {restored}"

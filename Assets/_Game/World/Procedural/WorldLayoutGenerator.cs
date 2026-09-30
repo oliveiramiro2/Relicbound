@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -5,14 +6,22 @@ public class WorldLayoutGenerator
 {
   private const float HorizontalSpacing = 10f;
   private const float BranchVerticalOffset = 6f;
-  Dictionary<WorldRoom, int> branchCounts =
-    new Dictionary<WorldRoom, int>();
 
-  Dictionary<WorldRoom, Vector2> positions =
-    new Dictionary<WorldRoom, Vector2>();
+  private readonly WorldRoomTemplateSelector templateSelector;
+
+  public WorldLayoutGenerator(
+      WorldRoomTemplateDatabase database
+  )
+  {
+    templateSelector =
+        new WorldRoomTemplateSelector(
+            database
+        );
+  }
 
   public WorldLayout Generate(
-      WorldRoomGraph graph
+      WorldRoomGraph graph,
+      int seed
   )
   {
     WorldLayout layout =
@@ -20,6 +29,12 @@ public class WorldLayoutGenerator
 
     Dictionary<WorldRoom, Vector2> positions =
         new Dictionary<WorldRoom, Vector2>();
+
+    Dictionary<WorldRoom, int> branchCounts =
+        new Dictionary<WorldRoom, int>();
+
+    System.Random random =
+        new System.Random(seed);
 
     foreach (WorldRoom room in graph.Rooms)
     {
@@ -35,13 +50,22 @@ public class WorldLayoutGenerator
           position
       );
 
+      WorldRoomTemplate template =
+          templateSelector.Select(
+              room,
+              random
+          );
+
       WorldRoomLayout roomLayout =
           new WorldRoomLayout(
               room,
+              template,
               position
           );
 
-      layout.AddRoom(roomLayout);
+      layout.AddRoom(
+          roomLayout
+      );
     }
 
     return layout;

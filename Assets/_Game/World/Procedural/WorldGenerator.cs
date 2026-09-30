@@ -11,7 +11,9 @@ public class WorldGenerator
         new WorldRoomGraph();
 
     WorldRoom start =
-        graph.CreateRoom();
+        graph.CreateRoom(
+            WorldRoomType.Start
+    );
 
     WorldRoom current =
         start;
@@ -22,7 +24,9 @@ public class WorldGenerator
     for (int i = 1; i < roomCount; i++)
     {
       WorldRoom next =
-          graph.CreateRoom();
+          graph.CreateRoom(
+          WorldRoomType.Normal
+      );
 
       graph.Connect(
           current,

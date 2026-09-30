@@ -31,7 +31,7 @@ public class WorldGeneratorDebug : MonoBehaviour
       }
 
       Debug.Log(
-          $"Room {room.Id} ->{connections}"
+          $"Room {room.Id} [{room.Type}] ->{connections}"
       );
     }
   }

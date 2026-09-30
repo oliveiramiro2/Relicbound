@@ -7,10 +7,15 @@ public class WorldRoomGraph
   public IReadOnlyList<WorldRoom> Rooms =>
       rooms;
 
-  public WorldRoom CreateRoom()
+  public WorldRoom CreateRoom(
+      WorldRoomType type
+  )
   {
     WorldRoom room =
-        new WorldRoom(rooms.Count);
+        new WorldRoom(
+            rooms.Count,
+            type
+        );
 
     rooms.Add(room);
 

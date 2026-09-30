@@ -4,142 +4,167 @@ using UnityEngine;
 
 public class WorldLayoutGenerator
 {
-  private const float HorizontalSpacing = 10f;
-  private const float BranchVerticalOffset = 6f;
+    private const float RoomGap = 2f;
+    private const float BranchVerticalGap = 2f;
 
-  private readonly WorldRoomTemplateSelector templateSelector;
+    private readonly WorldRoomTemplateSelector templateSelector;
 
-  public WorldLayoutGenerator(
-      WorldRoomTemplateDatabase database
-  )
-  {
-    templateSelector =
-        new WorldRoomTemplateSelector(
-            database
-        );
-  }
-
-  public WorldLayout Generate(
-      WorldRoomGraph graph,
-      int seed
-  )
-  {
-    WorldLayout layout =
-        new WorldLayout();
-
-    Dictionary<WorldRoom, Vector2> positions =
-        new Dictionary<WorldRoom, Vector2>();
-
-    Dictionary<WorldRoom, int> branchCounts =
-        new Dictionary<WorldRoom, int>();
-
-    System.Random random =
-        new System.Random(seed);
-
-    foreach (WorldRoom room in graph.Rooms)
+    public WorldLayoutGenerator(
+        WorldRoomTemplateDatabase database
+    )
     {
-      Vector2 position =
-          CalculatePosition(
-              room,
-              positions,
-              branchCounts
-          );
-
-      positions.Add(
-          room,
-          position
-      );
-
-      WorldRoomTemplate template =
-          templateSelector.Select(
-              room,
-              random
-          );
-
-      WorldRoomLayout roomLayout =
-          new WorldRoomLayout(
-              room,
-              template,
-              position
-          );
-
-      layout.AddRoom(
-          roomLayout
-      );
+        templateSelector =
+            new WorldRoomTemplateSelector(
+                database
+            );
     }
 
-    return layout;
-  }
-
-  private Vector2 CalculatePosition(
-      WorldRoom room,
-      Dictionary<WorldRoom, Vector2> positions,
-      Dictionary<WorldRoom, int> branchCounts
-  )
-  {
-    if (room.Type == WorldRoomType.Start)
+    public WorldLayout Generate(
+        WorldRoomGraph graph,
+        int seed
+    )
     {
-      return Vector2.zero;
+        WorldLayout layout = new();
+
+        Dictionary<WorldRoom, WorldRoomLayout> layouts = new();
+
+        Dictionary<WorldRoom, int> branchCounts = new();
+
+        System.Random random = new(seed);
+
+        foreach (WorldRoom room in graph.Rooms)
+        {
+            WorldRoomTemplate template =
+                templateSelector.Select(
+                    room,
+                    random
+                );
+
+            Vector2 position =
+                CalculatePosition(
+                    room,
+                    layouts,
+                    branchCounts,
+                    template
+                );
+
+            Vector2 size =
+                template != null
+                    ? template.Size
+                    : Vector2.one;
+
+            WorldRoomLayout roomLayout =
+                new WorldRoomLayout(
+                    room,
+                    template,
+                    position,
+                    size
+                );
+
+            layout.AddRoom(
+                roomLayout
+            );
+
+            layouts.Add(
+                room,
+                roomLayout
+            );
+        }
+
+        return layout;
     }
 
-    WorldRoom parent =
-        FindParent(room);
-
-    if (parent == null)
+    private Vector2 CalculatePosition(
+        WorldRoom room,
+        Dictionary<WorldRoom, WorldRoomLayout> layouts,
+        Dictionary<WorldRoom, int> branchCounts,
+        WorldRoomTemplate template
+    )
     {
-      return Vector2.zero;
+        if (room.Type == WorldRoomType.Start)
+        {
+            return Vector2.zero;
+        }
+
+        WorldRoom parent =
+            FindParent(room);
+
+        if (parent == null)
+        {
+            return Vector2.zero;
+        }
+
+        if (!layouts.TryGetValue(
+                parent,
+                out WorldRoomLayout parentLayout))
+        {
+            return Vector2.zero;
+        }
+
+        Vector2 parentPosition =
+            parentLayout.Position;
+
+        Vector2 parentSize =
+            parentLayout.Size;
+
+        Vector2 currentSize =
+            template != null
+                ? template.Size
+                : Vector2.one;
+
+        if (room.Type == WorldRoomType.Branch)
+        {
+            int branchIndex = 0;
+
+            if (branchCounts.TryGetValue(
+                    parent,
+                    out int count))
+            {
+                branchIndex = count;
+            }
+
+            branchCounts[parent] =
+                branchIndex + 1;
+
+            float direction =
+                branchIndex % 2 == 0
+                    ? 1f
+                    : -1f;
+
+            float verticalDistance =
+                parentSize.y / 2f +
+                currentSize.y / 2f +
+                BranchVerticalGap;
+
+            return parentPosition +
+                new Vector2(
+                    0f,
+                    direction * verticalDistance
+                );
+        }
+
+        float horizontalDistance =
+            parentSize.x / 2f +
+            currentSize.x / 2f +
+            RoomGap;
+
+        return parentPosition +
+            new Vector2(
+                horizontalDistance,
+                0f
+            );
     }
 
-    if (!positions.TryGetValue(
-            parent,
-            out Vector2 parentPosition))
+    private WorldRoom FindParent(
+        WorldRoom room
+    )
     {
-      return Vector2.zero;
+        foreach (WorldRoom connection in room.Connections)
+        {
+            if (connection.Id < room.Id)
+                return connection;
+        }
+
+        return null;
     }
-
-    if (room.Type == WorldRoomType.Branch)
-    {
-      int branchIndex = 0;
-
-      if (branchCounts.TryGetValue(
-              parent,
-              out int count))
-      {
-        branchIndex = count;
-      }
-
-      branchCounts[parent] =
-          branchIndex + 1;
-
-      float verticalOffset =
-          branchIndex % 2 == 0
-              ? BranchVerticalOffset
-              : -BranchVerticalOffset;
-
-      return parentPosition +
-          new Vector2(
-              0f,
-              verticalOffset
-          );
-    }
-
-    return parentPosition +
-        new Vector2(
-            HorizontalSpacing,
-            0f
-        );
-  }
-
-  private WorldRoom FindParent(
-      WorldRoom room
-  )
-  {
-    foreach (WorldRoom connection in room.Connections)
-    {
-      if (connection.Id < room.Id)
-        return connection;
-    }
-
-    return null;
-  }
 }

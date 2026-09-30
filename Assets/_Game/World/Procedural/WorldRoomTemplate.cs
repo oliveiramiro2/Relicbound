@@ -6,15 +6,21 @@ using UnityEngine;
 )]
 public class WorldRoomTemplate : ScriptableObject
 {
-  [Header("Identity")]
-  [SerializeField] private WorldRoomType roomType;
+    [Header("Identity")]
+    [SerializeField] private WorldRoomType roomType;
 
-  [Header("Content")]
-  [SerializeField] private GameObject prefab;
+    [Header("Layout")]
+    [SerializeField] private Vector2 size = new Vector2(10f, 6f);
 
-  public WorldRoomType RoomType =>
-      roomType;
+    [Header("Content")]
+    [SerializeField] private GameObject prefab;
 
-  public GameObject Prefab =>
-      prefab;
+    public WorldRoomType RoomType =>
+        roomType;
+
+    public Vector2 Size =>
+        size;
+
+    public GameObject Prefab =>
+        prefab;
 }

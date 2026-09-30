@@ -13,4 +13,5 @@ MonoBehaviour:
   m_Name: BranchTemplate_A
   m_EditorClassIdentifier: Assembly-CSharp::WorldRoomTemplate
   roomType: 2
+  size: {x: 25, y: 15}
   prefab: {fileID: 4342628620017518465, guid: 197becaaf1c69ff42bb3521e953d2ac5, type: 3}

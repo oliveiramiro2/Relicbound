@@ -142,6 +142,7 @@ GameObject:
   - component: {fileID: 51475482}
   - component: {fileID: 51475483}
   - component: {fileID: 51475484}
+  - component: {fileID: 51475485}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -449,6 +450,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 20a5aabd6ef914341968eebef6ab2dbc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameSaveInput
+--- !u!114 &51475485
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 51475469}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 289ca34bfacc7e741a669f550ef67293, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerSaveHandler
 --- !u!1 &205277118
 GameObject:
   m_ObjectHideFlags: 0

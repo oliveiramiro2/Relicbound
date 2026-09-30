@@ -1,12 +1,13 @@
 using UnityEngine;
 
 [RequireComponent(typeof(RelicManager))]
+[RequireComponent(typeof(PlayerSaveHandler))]
 public class GameSaveController : MonoBehaviour
 {
   [SerializeField] private RelicDatabase relicDatabase;
 
   private RelicManager relicManager;
-
+  private PlayerSaveHandler playerSaveHandler;
   private RelicSaveService relicSaveService;
   private SaveSystem saveSystem;
 
@@ -23,6 +24,9 @@ public class GameSaveController : MonoBehaviour
 
     saveSystem =
         new SaveSystem();
+
+    playerSaveHandler =
+        GetComponent<PlayerSaveHandler>();
   }
 
   public void SaveGame()
@@ -32,6 +36,9 @@ public class GameSaveController : MonoBehaviour
 
     gameSaveData.relics =
         relicSaveService.Capture();
+
+    gameSaveData.player =
+        playerSaveHandler.Capture();
 
     saveSystem.Save(gameSaveData);
   }
@@ -47,8 +54,18 @@ public class GameSaveController : MonoBehaviour
     if (gameSaveData.relics == null)
       return false;
 
-    return relicSaveService.Restore(
-        gameSaveData.relics
+    bool relicsRestored =
+        relicSaveService.Restore(
+            gameSaveData.relics
+        );
+
+    if (!relicsRestored)
+      return false;
+
+    playerSaveHandler.Restore(
+        gameSaveData.player
     );
+
+    return true;
   }
 }

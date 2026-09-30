@@ -6,6 +6,14 @@ public class WorldSeed : MonoBehaviour
 
   public int Seed => seed;
 
+  public void GenerateNewSeed()
+  {
+    seed = Random.Range(
+        int.MinValue,
+        int.MaxValue
+    );
+  }
+
   public void SetSeed(int value)
   {
     seed = value;

@@ -5,7 +5,11 @@ using UnityEngine;
 public class PlatformGenerator
 {
     private readonly GameObject platformPrefab;
+
     private readonly Vector2 platformSize;
+
+    private readonly ReachabilityValidator
+        reachabilityValidator;
 
     public PlatformGenerator(
         GameObject platformPrefab
@@ -17,11 +21,15 @@ public class PlatformGenerator
         platformSize =
             Vector2.zero;
 
+        reachabilityValidator =
+            new ReachabilityValidator();
+
         if (platformPrefab == null)
             return;
 
         ProceduralPlatform platform =
-            platformPrefab.GetComponent<ProceduralPlatform>();
+            platformPrefab.GetComponent<
+                ProceduralPlatform>();
 
         if (platform == null)
             return;
@@ -36,9 +44,7 @@ public class PlatformGenerator
         Transform parent,
         int count,
         float minimumSpacing,
-        float maximumHorizontalDistance,
-        float minimumVerticalDistance,
-        float maximumVerticalDistance,
+        MovementReachProfile reachProfile,
         int maximumAttemptsPerPlatform
     )
     {
@@ -50,7 +56,8 @@ public class PlatformGenerator
                 random,
                 parent,
                 count,
-                maximumAttemptsPerPlatform))
+                maximumAttemptsPerPlatform,
+                reachProfile))
         {
             return new PlatformGenerationResult(
                 graph,
@@ -94,7 +101,6 @@ public class PlatformGenerator
                 minX,
                 maxX,
                 minY,
-                maxY,
                 random,
                 parent,
                 graph,
@@ -116,8 +122,7 @@ public class PlatformGenerator
         for (
             int index = 1;
             index < count;
-            index++
-        )
+            index++)
         {
             bool isExit =
                 index == count - 1;
@@ -136,9 +141,7 @@ public class PlatformGenerator
                     graph,
                     occupiedAreas,
                     minimumSpacing,
-                    maximumHorizontalDistance,
-                    minimumVerticalDistance,
-                    maximumVerticalDistance,
+                    reachProfile,
                     maximumAttemptsPerPlatform
                 );
 
@@ -147,9 +150,23 @@ public class PlatformGenerator
                 break;
             }
 
+            ReachabilityCheckResult
+                reachability =
+                    reachabilityValidator.Check(
+                        previousPlatform,
+                        nextPlatform,
+                        reachProfile
+                    );
+
+            if (!reachability.IsReachable)
+            {
+                break;
+            }
+
             graph.Connect(
                 previousPlatform,
-                nextPlatform
+                nextPlatform,
+                reachability.Type
             );
 
             previousPlatform =
@@ -168,16 +185,16 @@ public class PlatformGenerator
         );
     }
 
-    private GeneratedPlatform GenerateStartPlatform(
-        float minX,
-        float maxX,
-        float minY,
-        float maxY,
-        System.Random random,
-        Transform parent,
-        PlatformGraph graph,
-        List<Rect> occupiedAreas
-    )
+    private GeneratedPlatform
+        GenerateStartPlatform(
+            float minX,
+            float maxX,
+            float minY,
+            System.Random random,
+            Transform parent,
+            PlatformGraph graph,
+            List<Rect> occupiedAreas
+        )
     {
         float x =
             Mathf.Lerp(
@@ -186,13 +203,10 @@ public class PlatformGenerator
                 (float)random.NextDouble()
             );
 
-        float y =
-            minY;
-
         Vector2 position =
             new Vector2(
                 x,
-                y
+                minY
             );
 
         return CreatePlatform(
@@ -206,30 +220,28 @@ public class PlatformGenerator
         );
     }
 
-    private GeneratedPlatform TryGeneratePlatform(
-        GeneratedPlatform previousPlatform,
-        int index,
-        bool isExit,
-        float minX,
-        float maxX,
-        float minY,
-        float maxY,
-        System.Random random,
-        Transform parent,
-        PlatformGraph graph,
-        List<Rect> occupiedAreas,
-        float minimumSpacing,
-        float maximumHorizontalDistance,
-        float minimumVerticalDistance,
-        float maximumVerticalDistance,
-        int maximumAttempts
-    )
+    private GeneratedPlatform
+        TryGeneratePlatform(
+            GeneratedPlatform previousPlatform,
+            int index,
+            bool isExit,
+            float minX,
+            float maxX,
+            float minY,
+            float maxY,
+            System.Random random,
+            Transform parent,
+            PlatformGraph graph,
+            List<Rect> occupiedAreas,
+            float minimumSpacing,
+            MovementReachProfile reachProfile,
+            int maximumAttempts
+        )
     {
         for (
             int attempt = 0;
             attempt < maximumAttempts;
-            attempt++
-        )
+            attempt++)
         {
             Vector2 candidate =
                 GenerateCandidatePosition(
@@ -239,18 +251,40 @@ public class PlatformGenerator
                     minY,
                     maxY,
                     random,
-                    maximumHorizontalDistance,
-                    minimumVerticalDistance,
-                    maximumVerticalDistance
+                    reachProfile
                 );
 
             Rect candidateBounds =
-                CreateRect(candidate);
+                CreateRect(
+                    candidate
+                );
 
             if (OverlapsAny(
                     candidateBounds,
                     occupiedAreas,
                     minimumSpacing))
+            {
+                continue;
+            }
+
+            GeneratedPlatform candidatePlatform =
+                new GeneratedPlatform(
+                    candidate,
+                    candidateBounds,
+                    index,
+                    false,
+                    isExit
+                );
+
+            ReachabilityCheckResult
+                reachability =
+                    reachabilityValidator.Check(
+                        previousPlatform,
+                        candidatePlatform,
+                        reachProfile
+                    );
+
+            if (!reachability.IsReachable)
             {
                 continue;
             }
@@ -276,24 +310,48 @@ public class PlatformGenerator
         float minY,
         float maxY,
         System.Random random,
-        float maximumHorizontalDistance,
-        float minimumVerticalDistance,
-        float maximumVerticalDistance
+        MovementReachProfile reachProfile
     )
     {
+        float horizontalDistance =
+            reachProfile
+                .EffectiveHorizontalDistance;
+
+        float upwardDistance =
+            reachProfile
+                .EffectiveVerticalUpDistance;
+
+        float downwardDistance =
+            reachProfile
+                .EffectiveVerticalDownDistance;
+
         float horizontalOffset =
             Mathf.Lerp(
-                -maximumHorizontalDistance,
-                maximumHorizontalDistance,
+                -horizontalDistance,
+                horizontalDistance,
                 (float)random.NextDouble()
             );
 
-        float verticalOffset =
-            Mathf.Lerp(
-                minimumVerticalDistance,
-                maximumVerticalDistance,
-                (float)random.NextDouble()
-            );
+        float verticalOffset;
+
+        if (random.NextDouble() < 0.5)
+        {
+            verticalOffset =
+                Mathf.Lerp(
+                    -downwardDistance,
+                    0f,
+                    (float)random.NextDouble()
+                );
+        }
+        else
+        {
+            verticalOffset =
+                Mathf.Lerp(
+                    0f,
+                    upwardDistance,
+                    (float)random.NextDouble()
+                );
+        }
 
         float x =
             previousPosition.x +
@@ -334,7 +392,9 @@ public class PlatformGenerator
     )
     {
         Rect bounds =
-            CreateRect(position);
+            CreateRect(
+                position
+            );
 
         UnityEngine.Object.Instantiate(
             platformPrefab,
@@ -411,10 +471,17 @@ public class PlatformGenerator
     )
     {
         return new Rect(
-            rect.xMin - amount / 2f,
-            rect.yMin - amount / 2f,
-            rect.width + amount,
-            rect.height + amount
+            rect.xMin -
+                amount / 2f,
+
+            rect.yMin -
+                amount / 2f,
+
+            rect.width +
+                amount,
+
+            rect.height +
+                amount
         );
     }
 
@@ -464,7 +531,8 @@ public class PlatformGenerator
         System.Random random,
         Transform parent,
         int count,
-        int maximumAttempts
+        int maximumAttempts,
+        MovementReachProfile reachProfile
     )
     {
         if (bounds == null)
@@ -480,6 +548,9 @@ public class PlatformGenerator
             return false;
 
         if (maximumAttempts <= 0)
+            return false;
+
+        if (reachProfile == null)
             return false;
 
         return true;

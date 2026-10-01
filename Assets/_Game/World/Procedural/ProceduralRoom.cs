@@ -12,6 +12,9 @@ public class ProceduralRoom : MonoBehaviour
   [SerializeField]
   private ProceduralRoomSettings settings;
 
+  [SerializeField]
+  private MovementReachSettings reachSettings;
+
   [Header("Platforms")]
   [SerializeField]
   private GameObject platformPrefab;
@@ -35,6 +38,9 @@ public class ProceduralRoom : MonoBehaviour
             roomSeed
         );
 
+    MovementReachProfile reachProfile =
+        reachSettings.CreateDefaultProfile();
+
     PlatformGenerator platformGenerator =
         new PlatformGenerator(
             platformPrefab
@@ -47,9 +53,7 @@ public class ProceduralRoom : MonoBehaviour
             generatedContent,
             settings.PlatformCount,
             settings.MinimumPlatformSpacing,
-            settings.MaximumHorizontalDistance,
-            settings.MinimumVerticalDistance,
-            settings.MaximumVerticalDistance,
+            reachProfile,
             settings.MaximumAttemptsPerPlatform
         );
 
@@ -121,6 +125,16 @@ public class ProceduralRoom : MonoBehaviour
       Debug.LogError(
           $"ProceduralRoom on {name}: " +
           "Procedural Room Settings is missing."
+      );
+
+      return false;
+    }
+
+    if (reachSettings == null)
+    {
+      Debug.LogError(
+          $"ProceduralRoom on {name}: " +
+          "Movement Reach Settings is missing."
       );
 
       return false;

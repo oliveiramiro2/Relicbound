@@ -7,11 +7,11 @@ public class PlatformGraph
 
   private readonly Dictionary<
       GeneratedPlatform,
-      List<GeneratedPlatform>
+      List<PlatformConnection>
   > connections =
       new Dictionary<
           GeneratedPlatform,
-          List<GeneratedPlatform>
+          List<PlatformConnection>
       >();
 
   public IReadOnlyList<GeneratedPlatform> Platforms =>
@@ -27,17 +27,20 @@ public class PlatformGraph
     if (platforms.Contains(platform))
       return;
 
-    platforms.Add(platform);
+    platforms.Add(
+        platform
+    );
 
     connections.Add(
         platform,
-        new List<GeneratedPlatform>()
+        new List<PlatformConnection>()
     );
   }
 
   public void Connect(
       GeneratedPlatform first,
-      GeneratedPlatform second
+      GeneratedPlatform second,
+      ReachabilityType type
   )
   {
     if (first == null ||
@@ -52,31 +55,72 @@ public class PlatformGraph
     if (!connections.ContainsKey(second))
       return;
 
-    if (!connections[first].Contains(second))
+    PlatformConnection forward =
+        new PlatformConnection(
+            first,
+            second,
+            type
+        );
+
+    PlatformConnection backward =
+        new PlatformConnection(
+            second,
+            first,
+            type
+        );
+
+    if (!ContainsConnection(
+            first,
+            second))
     {
-      connections[first].Add(second);
+      connections[first].Add(
+          forward
+      );
     }
 
-    if (!connections[second].Contains(first))
+    if (!ContainsConnection(
+            second,
+            first))
     {
-      connections[second].Add(first);
+      connections[second].Add(
+          backward
+      );
     }
   }
 
-  public IReadOnlyList<GeneratedPlatform> GetConnections(
-      GeneratedPlatform platform
-  )
+  public IReadOnlyList<PlatformConnection>
+      GetConnections(
+          GeneratedPlatform platform
+      )
   {
     if (platform == null)
-      return new List<GeneratedPlatform>();
+    {
+      return new List<PlatformConnection>();
+    }
 
     if (!connections.TryGetValue(
             platform,
-            out List<GeneratedPlatform> result))
+            out List<PlatformConnection> result))
     {
-      return new List<GeneratedPlatform>();
+      return new List<PlatformConnection>();
     }
 
     return result;
+  }
+
+  private bool ContainsConnection(
+      GeneratedPlatform from,
+      GeneratedPlatform to
+  )
+  {
+    foreach (
+        PlatformConnection connection
+        in connections[from])
+    {
+      if (connection.To == to)
+        return true;
+    }
+
+    return false;
   }
 }

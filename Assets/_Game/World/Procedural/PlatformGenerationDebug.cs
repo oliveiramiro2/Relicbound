@@ -15,8 +15,7 @@ public class PlatformGenerationDebug : MonoBehaviour
 
     PlatformGenerator generator =
         new PlatformGenerator(
-            platformPrefab,
-            new Vector2(2f, 0.5f)
+            platformPrefab
         );
 
     GameObject platform =

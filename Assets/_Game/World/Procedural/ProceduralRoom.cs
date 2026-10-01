@@ -40,17 +40,58 @@ public class ProceduralRoom : MonoBehaviour
             platformPrefab
         );
 
-    platformGenerator.Generate(
-        bounds,
-        random,
-        generatedContent,
-        settings.PlatformCount,
-        settings.MinimumPlatformSpacing,
-        settings.MaximumHorizontalDistance,
-        settings.MinimumVerticalDistance,
-        settings.MaximumVerticalDistance,
-        settings.MaximumAttemptsPerPlatform
+    PlatformGenerationResult result =
+        platformGenerator.Generate(
+            bounds,
+            random,
+            generatedContent,
+            settings.PlatformCount,
+            settings.MinimumPlatformSpacing,
+            settings.MaximumHorizontalDistance,
+            settings.MinimumVerticalDistance,
+            settings.MaximumVerticalDistance,
+            settings.MaximumAttemptsPerPlatform
+        );
+
+    LogGenerationResult(
+        result
     );
+  }
+
+  private void LogGenerationResult(
+      PlatformGenerationResult result
+  )
+  {
+    if (result == null)
+      return;
+
+    Debug.Log(
+        $"ProceduralRoom [{name}] " +
+        $"generated {result.GeneratedCount} platforms."
+    );
+
+    if (result.StartPlatform != null)
+    {
+      Debug.Log(
+          $"Start Platform: " +
+          $"{result.StartPlatform.Position}"
+      );
+    }
+
+    if (result.ExitPlatform != null)
+    {
+      Debug.Log(
+          $"Exit Platform: " +
+          $"{result.ExitPlatform.Position}"
+      );
+    }
+    else
+    {
+      Debug.LogWarning(
+          $"ProceduralRoom [{name}] " +
+          "did not generate a valid exit platform."
+      );
+    }
   }
 
   private bool ValidateReferences()

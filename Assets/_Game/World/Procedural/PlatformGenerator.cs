@@ -30,7 +30,7 @@ public class PlatformGenerator
             platform.Size;
     }
 
-    public int Generate(
+    public PlatformGenerationResult Generate(
         RoomGenerationBounds bounds,
         System.Random random,
         Transform parent,
@@ -42,125 +42,99 @@ public class PlatformGenerator
         int maximumAttemptsPerPlatform
     )
     {
-        if (!IsValidInput(
+        PlatformGraph graph =
+            new PlatformGraph();
+
+        if (!ValidateInput(
                 bounds,
                 random,
                 parent,
                 count,
                 maximumAttemptsPerPlatform))
         {
-            return 0;
+            return new PlatformGenerationResult(
+                graph,
+                null,
+                null
+            );
         }
 
         if (!HasValidPlatformSize())
-            return 0;
+        {
+            return new PlatformGenerationResult(
+                graph,
+                null,
+                null
+            );
+        }
 
-        Vector2 center =
-            bounds.Center;
-
-        Vector2 boundsSize =
-            bounds.Size;
-
-        float halfWidth =
-            platformSize.x / 2f;
-
-        float halfHeight =
-            platformSize.y / 2f;
-
-        float minX =
-            center.x -
-            boundsSize.x / 2f +
-            halfWidth;
-
-        float maxX =
-            center.x +
-            boundsSize.x / 2f -
-            halfWidth;
-
-        float minY =
-            center.y -
-            boundsSize.y / 2f +
-            halfHeight;
-
-        float maxY =
-            center.y +
-            boundsSize.y / 2f -
-            halfHeight;
+        CalculateGenerationLimits(
+            bounds,
+            out float minX,
+            out float maxX,
+            out float minY,
+            out float maxY
+        );
 
         if (minX > maxX ||
             minY > maxY)
         {
-            Debug.LogWarning(
-                "PlatformGenerator: " +
-                "Generation bounds are too small."
+            return new PlatformGenerationResult(
+                graph,
+                null,
+                null
             );
-
-            return 0;
         }
-
-        minimumSpacing =
-            Mathf.Max(
-                0f,
-                minimumSpacing
-            );
-
-        maximumHorizontalDistance =
-            Mathf.Max(
-                0f,
-                maximumHorizontalDistance
-            );
-
-        maximumVerticalDistance =
-            Mathf.Max(
-                0f,
-                maximumVerticalDistance
-            );
 
         List<Rect> occupiedAreas =
             new List<Rect>();
 
-        List<Vector2> generatedPositions =
-            new List<Vector2>();
-
-        int generatedCount = 0;
-
-        Vector2 firstPosition =
-            GenerateFirstPosition(
+        GeneratedPlatform startPlatform =
+            GenerateStartPlatform(
                 minX,
                 maxX,
                 minY,
                 maxY,
-                random
+                random,
+                parent,
+                graph,
+                occupiedAreas
             );
 
-        CreatePlatform(
-            firstPosition,
-            parent,
-            occupiedAreas,
-            generatedPositions
-        );
+        if (startPlatform == null)
+        {
+            return new PlatformGenerationResult(
+                graph,
+                null,
+                null
+            );
+        }
 
-        generatedCount++;
+        GeneratedPlatform previousPlatform =
+            startPlatform;
 
         for (
-            int platformIndex = 1;
-            platformIndex < count;
-            platformIndex++
+            int index = 1;
+            index < count;
+            index++
         )
         {
-            bool generated =
-                TryGenerateNextPlatform(
-                    generatedPositions[
-                        generatedPositions.Count - 1
-                    ],
+            bool isExit =
+                index == count - 1;
+
+            GeneratedPlatform nextPlatform =
+                TryGeneratePlatform(
+                    previousPlatform,
+                    index,
+                    isExit,
                     minX,
                     maxX,
                     minY,
                     maxY,
                     random,
-                    occupiedAreas,
-                    generatedPositions,
                     parent,
+                    graph,
+                    occupiedAreas,
                     minimumSpacing,
                     maximumHorizontalDistance,
                     minimumVerticalDistance,
@@ -168,38 +142,82 @@ public class PlatformGenerator
                     maximumAttemptsPerPlatform
                 );
 
-            if (!generated)
+            if (nextPlatform == null)
             {
-                Debug.LogWarning(
-                    $"PlatformGenerator: " +
-                    $"Could not generate platform " +
-                    $"{platformIndex + 1}/{count}."
-                );
-
                 break;
             }
 
-            generatedCount++;
+            graph.Connect(
+                previousPlatform,
+                nextPlatform
+            );
+
+            previousPlatform =
+                nextPlatform;
         }
 
-        Debug.Log(
-            $"PlatformGenerator: " +
-            $"Generated {generatedCount}/{count} platforms."
-        );
+        GeneratedPlatform exitPlatform =
+            previousPlatform.IsExit
+                ? previousPlatform
+                : null;
 
-        return generatedCount;
+        return new PlatformGenerationResult(
+            graph,
+            startPlatform,
+            exitPlatform
+        );
     }
 
-    private bool TryGenerateNextPlatform(
-        Vector2 previousPosition,
+    private GeneratedPlatform GenerateStartPlatform(
         float minX,
         float maxX,
         float minY,
         float maxY,
         System.Random random,
-        List<Rect> occupiedAreas,
-        List<Vector2> generatedPositions,
         Transform parent,
+        PlatformGraph graph,
+        List<Rect> occupiedAreas
+    )
+    {
+        float x =
+            Mathf.Lerp(
+                minX,
+                maxX,
+                (float)random.NextDouble()
+            );
+
+        float y =
+            minY;
+
+        Vector2 position =
+            new Vector2(
+                x,
+                y
+            );
+
+        return CreatePlatform(
+            position,
+            0,
+            true,
+            false,
+            parent,
+            graph,
+            occupiedAreas
+        );
+    }
+
+    private GeneratedPlatform TryGeneratePlatform(
+        GeneratedPlatform previousPlatform,
+        int index,
+        bool isExit,
+        float minX,
+        float maxX,
+        float minY,
+        float maxY,
+        System.Random random,
+        Transform parent,
+        PlatformGraph graph,
+        List<Rect> occupiedAreas,
         float minimumSpacing,
         float maximumHorizontalDistance,
         float minimumVerticalDistance,
@@ -215,7 +233,7 @@ public class PlatformGenerator
         {
             Vector2 candidate =
                 GenerateCandidatePosition(
-                    previousPosition,
+                    previousPlatform.Position,
                     minX,
                     maxX,
                     minY,
@@ -226,28 +244,29 @@ public class PlatformGenerator
                     maximumVerticalDistance
                 );
 
-            Rect candidateRect =
+            Rect candidateBounds =
                 CreateRect(candidate);
 
             if (OverlapsAny(
-                    candidateRect,
+                    candidateBounds,
                     occupiedAreas,
                     minimumSpacing))
             {
                 continue;
             }
 
-            CreatePlatform(
+            return CreatePlatform(
                 candidate,
+                index,
+                false,
+                isExit,
                 parent,
-                occupiedAreas,
-                generatedPositions
+                graph,
+                occupiedAreas
             );
-
-            return true;
         }
 
-        return false;
+        return null;
     }
 
     private Vector2 GenerateCandidatePosition(
@@ -304,41 +323,19 @@ public class PlatformGenerator
         );
     }
 
-    private Vector2 GenerateFirstPosition(
-        float minX,
-        float maxX,
-        float minY,
-        float maxY,
-        System.Random random
-    )
-    {
-        float x =
-            Mathf.Lerp(
-                minX,
-                maxX,
-                (float)random.NextDouble()
-            );
-
-        float y =
-            Mathf.Lerp(
-                minY,
-                maxY,
-                (float)random.NextDouble()
-            );
-
-        return new Vector2(
-            x,
-            y
-        );
-    }
-
-    private void CreatePlatform(
+    private GeneratedPlatform CreatePlatform(
         Vector2 position,
+        int index,
+        bool isStart,
+        bool isExit,
         Transform parent,
-        List<Rect> occupiedAreas,
-        List<Vector2> generatedPositions
+        PlatformGraph graph,
+        List<Rect> occupiedAreas
     )
     {
+        Rect bounds =
+            CreateRect(position);
+
         UnityEngine.Object.Instantiate(
             platformPrefab,
             position,
@@ -346,13 +343,24 @@ public class PlatformGenerator
             parent
         );
 
-        occupiedAreas.Add(
-            CreateRect(position)
+        GeneratedPlatform platform =
+            new GeneratedPlatform(
+                position,
+                bounds,
+                index,
+                isStart,
+                isExit
+            );
+
+        graph.AddPlatform(
+            platform
         );
 
-        generatedPositions.Add(
-            position
+        occupiedAreas.Add(
+            bounds
         );
+
+        return platform;
     }
 
     private Rect CreateRect(
@@ -410,7 +418,48 @@ public class PlatformGenerator
         );
     }
 
-    private bool IsValidInput(
+    private void CalculateGenerationLimits(
+        RoomGenerationBounds bounds,
+        out float minX,
+        out float maxX,
+        out float minY,
+        out float maxY
+    )
+    {
+        Vector2 center =
+            bounds.Center;
+
+        Vector2 size =
+            bounds.Size;
+
+        float halfWidth =
+            platformSize.x / 2f;
+
+        float halfHeight =
+            platformSize.y / 2f;
+
+        minX =
+            center.x -
+            size.x / 2f +
+            halfWidth;
+
+        maxX =
+            center.x +
+            size.x / 2f -
+            halfWidth;
+
+        minY =
+            center.y -
+            size.y / 2f +
+            halfHeight;
+
+        maxY =
+            center.y +
+            size.y / 2f -
+            halfHeight;
+    }
+
+    private bool ValidateInput(
         RoomGenerationBounds bounds,
         System.Random random,
         Transform parent,

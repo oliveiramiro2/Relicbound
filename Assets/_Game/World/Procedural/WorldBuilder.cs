@@ -8,17 +8,24 @@ public class WorldBuilder
       Transform worldRoot
   )
   {
-    this.worldRoot = worldRoot;
+    this.worldRoot =
+        worldRoot;
   }
 
   public void Build(
-      WorldLayout layout
+      WorldLayout layout,
+      int seed
   )
   {
     if (layout == null)
       return;
 
-    foreach (WorldRoomLayout roomLayout in layout.Rooms)
+    if (worldRoot == null)
+      return;
+
+    foreach (
+        WorldRoomLayout roomLayout
+        in layout.Rooms)
     {
       if (roomLayout.Template == null)
         continue;
@@ -29,11 +36,23 @@ public class WorldBuilder
       if (prefab == null)
         continue;
 
-      Object.Instantiate(
-          prefab,
-          roomLayout.Position,
-          Quaternion.identity,
-          worldRoot
+      GameObject roomObject =
+          Object.Instantiate(
+              prefab,
+              roomLayout.Position,
+              Quaternion.identity,
+              worldRoot
+          );
+
+      ProceduralRoom proceduralRoom =
+          roomObject.GetComponent<ProceduralRoom>();
+
+      if (proceduralRoom == null)
+        continue;
+
+      proceduralRoom.Generate(
+          seed,
+          roomLayout.Room.Id
       );
     }
   }

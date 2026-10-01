@@ -14,37 +14,60 @@ public class PlatformGenerator
         this.platformPrefab =
             platformPrefab;
 
-        if (platformPrefab != null)
-        {
-            ProceduralPlatform platform =
-                platformPrefab.GetComponent<ProceduralPlatform>();
-
-            if (platform != null)
-            {
-                platformSize =
-                    platform.Size;
-            }
-        }
-    }
-
-    public void Generate(
-        RoomGenerationBounds bounds,
-        System.Random random,
-        Transform parent,
-        int count
-    )
-    {
-        if (bounds == null)
-            return;
+        platformSize = Vector2.zero;
 
         if (platformPrefab == null)
             return;
 
-        if (random == null)
+        ProceduralPlatform platform =
+            platformPrefab.GetComponent<ProceduralPlatform>();
+
+        if (platform == null)
             return;
 
+        platformSize =
+            platform.Size;
+    }
+
+    public int Generate(
+        RoomGenerationBounds bounds,
+        System.Random random,
+        Transform parent,
+        int count,
+        float minimumSpacing
+    )
+    {
+        if (bounds == null)
+            return 0;
+
+        if (platformPrefab == null)
+            return 0;
+
+        if (random == null)
+            return 0;
+
+        if (parent == null)
+            return 0;
+
         if (count <= 0)
-            return;
+            return 0;
+
+        if (platformSize.x <= 0f ||
+            platformSize.y <= 0f)
+        {
+            Debug.LogError(
+                "PlatformGenerator: " +
+                "Platform prefab has an invalid size."
+            );
+
+            return 0;
+        }
+
+        minimumSpacing =
+            Mathf.Max(
+                0f,
+                minimumSpacing
+            );
 
         Vector2 center =
             bounds.Center;
@@ -81,7 +104,13 @@ public class PlatformGenerator
         if (minX > maxX ||
             minY > maxY)
         {
-            return;
+            Debug.LogWarning(
+                "PlatformGenerator: " +
+                "Generation bounds are too small " +
+                "for the platform."
+            );
+
+            return 0;
         }
 
         List<Rect> occupiedAreas =
@@ -90,7 +119,10 @@ public class PlatformGenerator
         int generatedCount = 0;
 
         int maxAttempts =
-            count * 20;
+            Mathf.Max(
+                count * 30,
+                30
+            );
 
         for (
             int attempt = 0;
@@ -123,7 +155,8 @@ public class PlatformGenerator
 
             if (OverlapsAny(
                     candidate,
-                    occupiedAreas))
+                    occupiedAreas,
+                    minimumSpacing))
             {
                 continue;
             }
@@ -135,14 +168,23 @@ public class PlatformGenerator
                 parent
             );
 
-            occupiedAreas.Add(candidate);
+            occupiedAreas.Add(
+                candidate
+            );
 
             generatedCount++;
         }
 
-        Debug.Log(
-            $"Generated {generatedCount}/{count} platforms."
-        );
+        if (generatedCount < count)
+        {
+            Debug.LogWarning(
+                $"PlatformGenerator: " +
+                $"Generated {generatedCount}/{count} " +
+                $"platforms."
+            );
+        }
+
+        return generatedCount;
     }
 
     private Rect CreateRect(
@@ -150,8 +192,12 @@ public class PlatformGenerator
     )
     {
         return new Rect(
-            center.x - platformSize.x / 2f,
-            center.y - platformSize.y / 2f,
+            center.x -
+                platformSize.x / 2f,
+
+            center.y -
+                platformSize.y / 2f,
+
             platformSize.x,
             platformSize.y
         );
@@ -159,18 +205,40 @@ public class PlatformGenerator
 
     private bool OverlapsAny(
         Rect candidate,
-        List<Rect> occupiedAreas
+        List<Rect> occupiedAreas,
+        float minimumSpacing
     )
     {
-        foreach (Rect occupiedArea in occupiedAreas)
+        foreach (
+            Rect occupiedArea
+            in occupiedAreas)
         {
+            Rect expandedArea =
+                ExpandRect(
+                    occupiedArea,
+                    minimumSpacing
+                );
+
             if (candidate.Overlaps(
-                    occupiedArea))
+                    expandedArea))
             {
                 return true;
             }
         }
 
         return false;
+    }
+
+    private Rect ExpandRect(
+        Rect rect,
+        float amount
+    )
+    {
+        return new Rect(
+            rect.xMin - amount / 2f,
+            rect.yMin - amount / 2f,
+            rect.width + amount,
+            rect.height + amount
+        );
     }
 }

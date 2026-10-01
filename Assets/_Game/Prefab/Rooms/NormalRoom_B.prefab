@@ -44,10 +44,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b0c1caab0f4b2bf42bc7c0057e9d4ff8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlatformGenerationDebug
-  seed: 12345
+  seed: 54321
   platformPrefab: {fileID: 8199609936405834456, guid: ff3850c0a76ba90408d8f35db4e0476d, type: 3}
   bounds: {fileID: 1797846564028641130}
   generatedContent: {fileID: 4598991434220219758}
+  platformCount: 5
 --- !u!1 &3657390367756199689
 GameObject:
   m_ObjectHideFlags: 0

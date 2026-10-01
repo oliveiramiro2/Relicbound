@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class PlatformGenerator
@@ -26,20 +27,24 @@ public class PlatformGenerator
         }
     }
 
-    public GameObject Generate(
+    public void Generate(
         RoomGenerationBounds bounds,
         System.Random random,
-        Transform parent
+        Transform parent,
+        int count
     )
     {
         if (bounds == null)
-            return null;
+            return;
 
         if (platformPrefab == null)
-            return null;
+            return;
 
         if (random == null)
-            return null;
+            return;
+
+        if (count <= 0)
+            return;
 
         Vector2 center =
             bounds.Center;
@@ -76,44 +81,96 @@ public class PlatformGenerator
         if (minX > maxX ||
             minY > maxY)
         {
-            return null;
+            return;
+        }
+
+        List<Rect> occupiedAreas =
+            new List<Rect>();
+
+        int generatedCount = 0;
+
+        int maxAttempts =
+            count * 20;
+
+        for (
+            int attempt = 0;
+            attempt < maxAttempts &&
+            generatedCount < count;
+            attempt++)
+        {
+            float x =
+                Mathf.Lerp(
+                    minX,
+                    maxX,
+                    (float)random.NextDouble()
+                );
+
+            float y =
+                Mathf.Lerp(
+                    minY,
+                    maxY,
+                    (float)random.NextDouble()
+                );
+
+            Vector2 position =
+                new Vector2(
+                    x,
+                    y
+                );
+
+            Rect candidate =
+                CreateRect(position);
+
+            if (OverlapsAny(
+                    candidate,
+                    occupiedAreas))
+            {
+                continue;
+            }
+
+            UnityEngine.Object.Instantiate(
+                platformPrefab,
+                position,
+                Quaternion.identity,
+                parent
+            );
+
+            occupiedAreas.Add(candidate);
+
+            generatedCount++;
         }
 
         Debug.Log(
-            $"Bounds Center: {center} | " +
-            $"Bounds Size: {boundsSize} | " +
-            $"Platform Size: {platformSize} | " +
-            $"MinX: {minX} | " +
-            $"MaxX: {maxX} | " +
-            $"MinY: {minY} | " +
-            $"MaxY: {maxY}"
+            $"Generated {generatedCount}/{count} platforms."
         );
+    }
 
-        float x =
-            Mathf.Lerp(
-                minX,
-                maxX,
-                (float)random.NextDouble()
-            );
-
-        float y =
-            Mathf.Lerp(
-                minY,
-                maxY,
-                (float)random.NextDouble()
-            );
-
-        Vector2 position =
-            new Vector2(
-                x,
-                y
-            );
-
-        return UnityEngine.Object.Instantiate(
-            platformPrefab,
-            position,
-            Quaternion.identity,
-            parent
+    private Rect CreateRect(
+        Vector2 center
+    )
+    {
+        return new Rect(
+            center.x - platformSize.x / 2f,
+            center.y - platformSize.y / 2f,
+            platformSize.x,
+            platformSize.y
         );
+    }
+
+    private bool OverlapsAny(
+        Rect candidate,
+        List<Rect> occupiedAreas
+    )
+    {
+        foreach (Rect occupiedArea in occupiedAreas)
+        {
+            if (candidate.Overlaps(
+                    occupiedArea))
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

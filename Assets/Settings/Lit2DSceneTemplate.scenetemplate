@@ -66,6 +66,8 @@ MonoBehaviour:
   dependencies:
   - dependency: {fileID: 2835310756450443353, guid: 3d03f4b5bafb03640b0a036aec1a1f1c, type: 3}
     instantiationMode: 0
+  - dependency: {fileID: 485366355099859923, guid: 63700ee31b61562419ef8733521e40c2, type: 3}
+    instantiationMode: 0
   - dependency: {fileID: 11400000, guid: e6b9947a196db1840aa9a74944f4bae1, type: 2}
     instantiationMode: 1
   - dependency: {fileID: 6200000, guid: b7c9c2bacecda3f4c8ec8c3be5cc3531, type: 2}
@@ -84,6 +86,10 @@ MonoBehaviour:
     instantiationMode: 0
   - dependency: {fileID: 11400000, guid: 4e90fbb41e5d7064d89cbd24a7dfe1ff, type: 2}
     instantiationMode: 1
+  - dependency: {fileID: 11400000, guid: 52ff6a08f40accb41a3405a57957b2c7, type: 2}
+    instantiationMode: 1
+  - dependency: {fileID: 11400000, guid: 6b8f870c05c88bf448ed8947423c6af0, type: 2}
+    instantiationMode: 1
   - dependency: {fileID: 2800000, guid: 26663a5ec9987421996161615506b6c5, type: 3}
     instantiationMode: 1
   - dependency: {fileID: 1622046166435386957, guid: dc65b7b6b1de13e429e71b84c1f4e5f0, type: 3}
@@ -101,6 +107,8 @@ MonoBehaviour:
   - dependency: {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
     instantiationMode: 0
   - dependency: {fileID: 11400000, guid: 3f9215ea0144899419cfbc0957140d3f, type: 2}
+    instantiationMode: 0
+  - dependency: {fileID: 2800000, guid: 207ee8102dd4143d288186ef0be518ee, type: 3}
     instantiationMode: 0
   - dependency: {fileID: 11400000, guid: 8fd9f8f34e0a31e429b9071ceab291e1, type: 2}
     instantiationMode: 1
@@ -138,6 +146,8 @@ MonoBehaviour:
     instantiationMode: 1
   - dependency: {fileID: 11400000, guid: 116c709f1e09f38408435ca008d8d96b, type: 2}
     instantiationMode: 1
+  - dependency: {fileID: 6998959507119129601, guid: e999cebd376541e4c8f3d6d651552612, type: 3}
+    instantiationMode: 0
   - dependency: {fileID: -944628639613478452, guid: ca9f5fa95ffab41fb9a615ab714db018, type: 3}
     instantiationMode: 1
   - dependency: {fileID: 2800000, guid: 57da91ef0c2a5489891995dc81537253, type: 3}

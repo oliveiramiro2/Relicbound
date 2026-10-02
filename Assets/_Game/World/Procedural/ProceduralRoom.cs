@@ -35,6 +35,16 @@ public class ProceduralRoom : MonoBehaviour
     [SerializeField]
     private GameObject hazardPrefab;
 
+    [Header("Relics")]
+    [SerializeField]
+    private ProceduralRelicSettings relicSettings;
+
+    [SerializeField]
+    private RelicDatabase relicDatabase;
+
+    [SerializeField]
+    private GameObject relicPickupPrefab;
+
     public void Generate(
         int seed,
         int roomId
@@ -86,6 +96,11 @@ public class ProceduralRoom : MonoBehaviour
         }
 
         GenerateContent(
+            result,
+            random
+        );
+
+        GenerateRelics(
             result,
             random
         );
@@ -165,6 +180,63 @@ public class ProceduralRoom : MonoBehaviour
             $"ProceduralRoom [{name}] " +
             $"generated " +
             $"{hazardResult.Count} hazards."
+        );
+    }
+
+    private void GenerateRelics(
+    PlatformGenerationResult result,
+    System.Random random
+)
+    {
+        if (relicSettings == null)
+            return;
+
+        if (!relicSettings.GenerateRelics)
+            return;
+
+        if (relicDatabase == null)
+        {
+            Debug.LogWarning(
+                "ProceduralRoom: " +
+                "RelicDatabase is missing."
+            );
+
+            return;
+        }
+
+        if (relicPickupPrefab == null)
+        {
+            Debug.LogWarning(
+                "ProceduralRoom: " +
+                "Relic pickup prefab is missing."
+            );
+
+            return;
+        }
+
+        RelicGenerator generator =
+            new RelicGenerator(
+                relicPickupPrefab,
+                relicDatabase,
+                relicSettings.VerticalOffset
+            );
+
+        RelicGenerationResult
+            generationResult =
+            generator.Generate(
+                result.Graph,
+                generatedContent,
+                random,
+                relicSettings.MinimumRelicsPerRoom,
+                relicSettings.MaximumRelicsPerRoom,
+                relicSettings.PreferBranches,
+                relicSettings.BranchSelectionWeight
+            );
+
+        Debug.Log(
+            "ProceduralRoom: Generated " +
+            generationResult.Count +
+            " relic(s)."
         );
     }
 

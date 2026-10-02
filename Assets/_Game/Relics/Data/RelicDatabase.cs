@@ -7,7 +7,11 @@ using UnityEngine;
 )]
 public class RelicDatabase : ScriptableObject
 {
-  [SerializeField] private List<RelicData> relics = new();
+  [SerializeField]
+  private List<RelicData> relics = new();
+
+  public IReadOnlyList<RelicData> Relics =>
+      relics;
 
   public RelicData GetById(string id)
   {

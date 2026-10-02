@@ -2,7 +2,16 @@ using UnityEngine;
 
 public class RelicPickup : MonoBehaviour
 {
-  [SerializeField] private RelicData relicData;
+  [SerializeField]
+  private RelicData relicData;
+
+  public RelicData RelicData =>
+      relicData;
+
+  public void Initialize(RelicData data)
+  {
+    relicData = data;
+  }
 
   private void OnTriggerEnter2D(Collider2D other)
   {
@@ -15,16 +24,31 @@ public class RelicPickup : MonoBehaviour
     Collect(collector);
   }
 
-  public void Collect(PlayerRelicCollector collector)
+  public bool Collect(
+      PlayerRelicCollector collector
+  )
   {
-    if (relicData == null)
-      return;
+    if (collector == null)
+      return false;
 
-    bool collected = collector.Collect(relicData);
+    if (relicData == null)
+    {
+      Debug.LogError(
+          "RelicPickup: " +
+          "No RelicData assigned."
+      );
+
+      return false;
+    }
+
+    bool collected =
+        collector.Collect(relicData);
 
     if (!collected)
-      return;
+      return false;
 
     Destroy(gameObject);
+
+    return true;
   }
 }

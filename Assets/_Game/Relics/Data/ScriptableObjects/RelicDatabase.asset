@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: RelicDatabase
   m_EditorClassIdentifier: Assembly-CSharp::RelicDatabase
   relics:
-  - {fileID: 11400000, guid: 78e0a62fbf3bb1d4896d35105f595713, type: 2}
   - {fileID: 11400000, guid: 116c709f1e09f38408435ca008d8d96b, type: 2}
+  - {fileID: 11400000, guid: 78e0a62fbf3bb1d4896d35105f595713, type: 2}
   - {fileID: 11400000, guid: ff8d413ce923bd0458cddfd60f0219bc, type: 2}
   - {fileID: 11400000, guid: a99f8c4c470983b4f824396cbb9af629, type: 2}
   - {fileID: 11400000, guid: 4e79798b4cca4564e94c12d24841993b, type: 2}

@@ -227,6 +227,9 @@ MonoBehaviour:
   grapplePointPrefab: {fileID: 1965000740138076945, guid: a43e010262852dc48897a8e63a1cb0eb, type: 3}
   contentSettings: {fileID: 11400000, guid: 6b8f870c05c88bf448ed8947423c6af0, type: 2}
   hazardPrefab: {fileID: 485366355099859923, guid: 63700ee31b61562419ef8733521e40c2, type: 3}
+  relicSettings: {fileID: 11400000, guid: 52ff6a08f40accb41a3405a57957b2c7, type: 2}
+  relicDatabase: {fileID: 11400000, guid: d421671f9ab37d64581fa3c418d37fbe, type: 2}
+  relicPickupPrefab: {fileID: 6998959507119129601, guid: e999cebd376541e4c8f3d6d651552612, type: 3}
 --- !u!1 &7228812148016955409
 GameObject:
   m_ObjectHideFlags: 0

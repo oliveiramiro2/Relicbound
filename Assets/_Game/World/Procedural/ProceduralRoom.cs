@@ -54,7 +54,11 @@ public class ProceduralRoom : MonoBehaviour
             settings.PlatformCount,
             settings.MinimumPlatformSpacing,
             reachProfile,
-            settings.MaximumAttemptsPerPlatform
+            settings.MaximumAttemptsPerPlatform,
+            settings.MinimumBranches,
+            settings.MaximumBranches,
+            settings.MinimumBranchLength,
+            settings.MaximumBranchLength
         );
 
     LogGenerationResult(
@@ -72,6 +76,21 @@ public class ProceduralRoom : MonoBehaviour
     Debug.Log(
         $"ProceduralRoom [{name}] " +
         $"generated {result.GeneratedCount} platforms."
+    );
+
+    Debug.Log(
+        $"Main Path: " +
+        $"{result.MainPathPlatforms.Count}"
+    );
+
+    Debug.Log(
+        $"Branches: " +
+        $"{result.BranchPlatforms.Count}"
+    );
+
+    Debug.Log(
+        $"Dead Ends: " +
+        $"{result.DeadEndPlatforms.Count}"
     );
 
     if (result.StartPlatform != null)

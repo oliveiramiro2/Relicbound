@@ -45,11 +45,27 @@ public class PlatformGenerator
         int count,
         float minimumSpacing,
         MovementReachProfile reachProfile,
-        int maximumAttemptsPerPlatform
+        int maximumAttemptsPerPlatform,
+        int minimumBranches,
+        int maximumBranches,
+        int minimumBranchLength,
+        int maximumBranchLength
     )
     {
         PlatformGraph graph =
             new PlatformGraph();
+
+        List<GeneratedPlatform>
+            mainPathPlatforms =
+                new List<GeneratedPlatform>();
+
+        List<GeneratedPlatform>
+            branchPlatforms =
+                new List<GeneratedPlatform>();
+
+        List<GeneratedPlatform>
+            deadEndPlatforms =
+                new List<GeneratedPlatform>();
 
         if (!ValidateInput(
                 bounds,
@@ -59,19 +75,25 @@ public class PlatformGenerator
                 maximumAttemptsPerPlatform,
                 reachProfile))
         {
-            return new PlatformGenerationResult(
+            return CreateResult(
                 graph,
                 null,
-                null
+                null,
+                mainPathPlatforms,
+                branchPlatforms,
+                deadEndPlatforms
             );
         }
 
         if (!HasValidPlatformSize())
         {
-            return new PlatformGenerationResult(
+            return CreateResult(
                 graph,
                 null,
-                null
+                null,
+                mainPathPlatforms,
+                branchPlatforms,
+                deadEndPlatforms
             );
         }
 
@@ -86,10 +108,13 @@ public class PlatformGenerator
         if (minX > maxX ||
             minY > maxY)
         {
-            return new PlatformGenerationResult(
+            return CreateResult(
                 graph,
                 null,
-                null
+                null,
+                mainPathPlatforms,
+                branchPlatforms,
+                deadEndPlatforms
             );
         }
 
@@ -109,12 +134,19 @@ public class PlatformGenerator
 
         if (startPlatform == null)
         {
-            return new PlatformGenerationResult(
+            return CreateResult(
                 graph,
                 null,
-                null
+                null,
+                mainPathPlatforms,
+                branchPlatforms,
+                deadEndPlatforms
             );
         }
+
+        mainPathPlatforms.Add(
+            startPlatform
+        );
 
         GeneratedPlatform previousPlatform =
             startPlatform;
@@ -132,6 +164,7 @@ public class PlatformGenerator
                     previousPlatform,
                     index,
                     isExit,
+                    PlatformRouteType.MainPath,
                     minX,
                     maxX,
                     minY,
@@ -152,11 +185,11 @@ public class PlatformGenerator
 
             ReachabilityCheckResult
                 reachability =
-                    reachabilityValidator.Check(
-                        previousPlatform,
-                        nextPlatform,
-                        reachProfile
-                    );
+                reachabilityValidator.Check(
+                    previousPlatform,
+                    nextPlatform,
+                    reachProfile
+                );
 
             if (!reachability.IsReachable)
             {
@@ -169,6 +202,10 @@ public class PlatformGenerator
                 reachability.Type
             );
 
+            mainPathPlatforms.Add(
+                nextPlatform
+            );
+
             previousPlatform =
                 nextPlatform;
         }
@@ -178,11 +215,299 @@ public class PlatformGenerator
                 ? previousPlatform
                 : null;
 
-        return new PlatformGenerationResult(
+        if (exitPlatform == null)
+        {
+            return CreateResult(
+                graph,
+                startPlatform,
+                null,
+                mainPathPlatforms,
+                branchPlatforms,
+                deadEndPlatforms
+            );
+        }
+
+        int branchCount =
+            CalculateBranchCount(
+                random,
+                minimumBranches,
+                maximumBranches
+            );
+
+        GenerateBranches(
+            branchCount,
+            mainPathPlatforms,
+            minX,
+            maxX,
+            minY,
+            maxY,
+            random,
+            parent,
+            graph,
+            occupiedAreas,
+            minimumSpacing,
+            reachProfile,
+            maximumAttemptsPerPlatform,
+            minimumBranchLength,
+            maximumBranchLength,
+            branchPlatforms,
+            deadEndPlatforms
+        );
+
+        return CreateResult(
             graph,
             startPlatform,
-            exitPlatform
+            exitPlatform,
+            mainPathPlatforms,
+            branchPlatforms,
+            deadEndPlatforms
         );
+    }
+
+    private void GenerateBranches(
+        int branchCount,
+        List<GeneratedPlatform> mainPathPlatforms,
+        float minX,
+        float maxX,
+        float minY,
+        float maxY,
+        System.Random random,
+        Transform parent,
+        PlatformGraph graph,
+        List<Rect> occupiedAreas,
+        float minimumSpacing,
+        MovementReachProfile reachProfile,
+        int maximumAttemptsPerPlatform,
+        int minimumBranchLength,
+        int maximumBranchLength,
+        List<GeneratedPlatform> branchPlatforms,
+        List<GeneratedPlatform> deadEndPlatforms
+    )
+    {
+        if (branchCount <= 0)
+            return;
+
+        if (mainPathPlatforms.Count < 2)
+            return;
+
+        List<GeneratedPlatform>
+            availableParents =
+            new List<GeneratedPlatform>(
+                mainPathPlatforms
+            );
+
+        Shuffle(
+            availableParents,
+            random
+        );
+
+        int generatedBranches = 0;
+
+        foreach (
+            GeneratedPlatform branchParent
+            in availableParents)
+        {
+            if (generatedBranches >=
+                branchCount)
+            {
+                break;
+            }
+
+            if (branchParent.IsStart)
+                continue;
+
+            if (branchParent.IsExit)
+                continue;
+
+            int branchLength =
+                random.Next(
+                    minimumBranchLength,
+                    maximumBranchLength + 1
+                );
+
+            List<GeneratedPlatform>
+                generatedBranch =
+                GenerateBranch(
+                    branchParent,
+                    branchLength,
+                    minX,
+                    maxX,
+                    minY,
+                    maxY,
+                    random,
+                    parent,
+                    graph,
+                    occupiedAreas,
+                    minimumSpacing,
+                    reachProfile,
+                    maximumAttemptsPerPlatform,
+                    branchPlatforms
+                );
+
+            if (generatedBranch.Count == 0)
+                continue;
+
+            generatedBranches++;
+
+            GeneratedPlatform lastPlatform =
+                generatedBranch[
+                    generatedBranch.Count - 1
+                ];
+
+            lastPlatform =
+                MarkAsDeadEnd(
+                    lastPlatform
+                );
+
+            deadEndPlatforms.Add(
+                lastPlatform
+            );
+        }
+    }
+
+    private List<GeneratedPlatform>
+        GenerateBranch(
+            GeneratedPlatform parentPlatform,
+            int length,
+            float minX,
+            float maxX,
+            float minY,
+            float maxY,
+            System.Random random,
+            Transform parent,
+            PlatformGraph graph,
+            List<Rect> occupiedAreas,
+            float minimumSpacing,
+            MovementReachProfile reachProfile,
+            int maximumAttemptsPerPlatform,
+            List<GeneratedPlatform> branchPlatforms
+        )
+    {
+        List<GeneratedPlatform>
+            generatedPlatforms =
+            new List<GeneratedPlatform>();
+
+        GeneratedPlatform previousPlatform =
+            parentPlatform;
+
+        for (
+            int index = 0;
+            index < length;
+            index++)
+        {
+            GeneratedPlatform branchPlatform =
+                TryGeneratePlatform(
+                    previousPlatform,
+                    graph.Platforms.Count,
+                    false,
+                    PlatformRouteType.Branch,
+                    minX,
+                    maxX,
+                    minY,
+                    maxY,
+                    random,
+                    parent,
+                    graph,
+                    occupiedAreas,
+                    minimumSpacing,
+                    reachProfile,
+                    maximumAttemptsPerPlatform
+                );
+
+            if (branchPlatform == null)
+            {
+                break;
+            }
+
+            ReachabilityCheckResult
+                reachability =
+                reachabilityValidator.Check(
+                    previousPlatform,
+                    branchPlatform,
+                    reachProfile
+                );
+
+            if (!reachability.IsReachable)
+            {
+                break;
+            }
+
+            graph.Connect(
+                previousPlatform,
+                branchPlatform,
+                reachability.Type
+            );
+
+            generatedPlatforms.Add(
+                branchPlatform
+            );
+
+            branchPlatforms.Add(
+                branchPlatform
+            );
+
+            previousPlatform =
+                branchPlatform;
+        }
+
+        return generatedPlatforms;
+    }
+
+    private GeneratedPlatform MarkAsDeadEnd(
+    GeneratedPlatform platform
+)
+    {
+        return platform;
+    }
+
+    private int CalculateBranchCount(
+        System.Random random,
+        int minimumBranches,
+        int maximumBranches
+    )
+    {
+        minimumBranches =
+            Mathf.Max(
+                0,
+                minimumBranches
+            );
+
+        maximumBranches =
+            Mathf.Max(
+                minimumBranches,
+                maximumBranches
+            );
+
+        return random.Next(
+            minimumBranches,
+            maximumBranches + 1
+        );
+    }
+
+    private void Shuffle<T>(
+        List<T> list,
+        System.Random random
+    )
+    {
+        for (
+            int i = list.Count - 1;
+            i > 0;
+            i--)
+        {
+            int index =
+                random.Next(
+                    i + 1
+                );
+
+            T temporary =
+                list[i];
+
+            list[i] =
+                list[index];
+
+            list[index] =
+                temporary;
+        }
     }
 
     private GeneratedPlatform
@@ -214,6 +539,7 @@ public class PlatformGenerator
             0,
             true,
             false,
+            PlatformRouteType.MainPath,
             parent,
             graph,
             occupiedAreas
@@ -225,6 +551,7 @@ public class PlatformGenerator
             GeneratedPlatform previousPlatform,
             int index,
             bool isExit,
+            PlatformRouteType routeType,
             float minX,
             float maxX,
             float minY,
@@ -241,7 +568,8 @@ public class PlatformGenerator
         for (
             int attempt = 0;
             attempt < maximumAttempts;
-            attempt++)
+            attempt++
+        )
         {
             Vector2 candidate =
                 GenerateCandidatePosition(
@@ -267,22 +595,24 @@ public class PlatformGenerator
                 continue;
             }
 
-            GeneratedPlatform candidatePlatform =
+            GeneratedPlatform
+                candidatePlatform =
                 new GeneratedPlatform(
                     candidate,
                     candidateBounds,
                     index,
                     false,
-                    isExit
+                    isExit,
+                    routeType
                 );
 
             ReachabilityCheckResult
                 reachability =
-                    reachabilityValidator.Check(
-                        previousPlatform,
-                        candidatePlatform,
-                        reachProfile
-                    );
+                reachabilityValidator.Check(
+                    previousPlatform,
+                    candidatePlatform,
+                    reachProfile
+                );
 
             if (!reachability.IsReachable)
             {
@@ -294,6 +624,7 @@ public class PlatformGenerator
                 index,
                 false,
                 isExit,
+                routeType,
                 parent,
                 graph,
                 occupiedAreas
@@ -386,6 +717,7 @@ public class PlatformGenerator
         int index,
         bool isStart,
         bool isExit,
+        PlatformRouteType routeType,
         Transform parent,
         PlatformGraph graph,
         List<Rect> occupiedAreas
@@ -409,7 +741,8 @@ public class PlatformGenerator
                 bounds,
                 index,
                 isStart,
-                isExit
+                isExit,
+                routeType
             );
 
         graph.AddPlatform(
@@ -571,5 +904,25 @@ public class PlatformGenerator
         );
 
         return false;
+    }
+
+    private PlatformGenerationResult
+        CreateResult(
+            PlatformGraph graph,
+            GeneratedPlatform startPlatform,
+            GeneratedPlatform exitPlatform,
+            List<GeneratedPlatform> mainPathPlatforms,
+            List<GeneratedPlatform> branchPlatforms,
+            List<GeneratedPlatform> deadEndPlatforms
+        )
+    {
+        return new PlatformGenerationResult(
+            graph,
+            startPlatform,
+            exitPlatform,
+            mainPathPlatforms,
+            branchPlatforms,
+            deadEndPlatforms
+        );
     }
 }

@@ -225,6 +225,8 @@ MonoBehaviour:
   grappleSettings: {fileID: 11400000, guid: 6d4fc081f25bce042ac2c34c255bf621, type: 2}
   platformPrefab: {fileID: 8199609936405834456, guid: ff3850c0a76ba90408d8f35db4e0476d, type: 3}
   grapplePointPrefab: {fileID: 1965000740138076945, guid: a43e010262852dc48897a8e63a1cb0eb, type: 3}
+  contentSettings: {fileID: 11400000, guid: 6b8f870c05c88bf448ed8947423c6af0, type: 2}
+  hazardPrefab: {fileID: 485366355099859923, guid: 63700ee31b61562419ef8733521e40c2, type: 3}
 --- !u!1 &7228812148016955409
 GameObject:
   m_ObjectHideFlags: 0

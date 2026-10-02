@@ -27,6 +27,14 @@ public class ProceduralRoom : MonoBehaviour
     [SerializeField]
     private GameObject grapplePointPrefab;
 
+    [Header("Content")]
+    [SerializeField]
+    private ProceduralContentSettings
+        contentSettings;
+
+    [SerializeField]
+    private GameObject hazardPrefab;
+
     public void Generate(
         int seed,
         int roomId
@@ -77,6 +85,11 @@ public class ProceduralRoom : MonoBehaviour
             );
         }
 
+        GenerateContent(
+            result,
+            random
+        );
+
         LogGenerationResult(
             result
         );
@@ -98,7 +111,7 @@ public class ProceduralRoom : MonoBehaviour
                 grappleSettings
                     .MaximumConnections,
                 grappleSettings
-                    .VerticalOffset
+                    .DistanceFromPlatform
             );
 
         GrappleConnectionResult
@@ -114,6 +127,44 @@ public class ProceduralRoom : MonoBehaviour
             $"generated " +
             $"{grappleResult.ConnectionCount} " +
             $"grapple connections."
+        );
+    }
+
+    private void GenerateContent(
+        PlatformGenerationResult result,
+        System.Random random
+    )
+    {
+        if (result == null)
+            return;
+
+        if (contentSettings == null)
+            return;
+
+        if (!contentSettings.GenerateHazards)
+            return;
+
+        HazardGenerator hazardGenerator =
+            new HazardGenerator(
+                hazardPrefab
+            );
+
+        HazardGenerationResult
+            hazardResult =
+            hazardGenerator.Generate(
+                result.Graph,
+                generatedContent,
+                random,
+                contentSettings
+                    .MaximumHazardsPerRoom,
+                contentSettings
+                    .MinimumDistanceFromPlatformEdge
+            );
+
+        Debug.Log(
+            $"ProceduralRoom [{name}] " +
+            $"generated " +
+            $"{hazardResult.Count} hazards."
         );
     }
 
@@ -235,6 +286,27 @@ public class ProceduralRoom : MonoBehaviour
             Debug.LogError(
                 $"ProceduralRoom on {name}: " +
                 "Grapple Point Prefab is missing."
+            );
+
+            return false;
+        }
+
+        if (contentSettings == null)
+        {
+            Debug.LogError(
+                $"ProceduralRoom on {name}: " +
+                "Procedural Content Settings " +
+                "is missing."
+            );
+
+            return false;
+        }
+
+        if (hazardPrefab == null)
+        {
+            Debug.LogError(
+                $"ProceduralRoom on {name}: " +
+                "Hazard Prefab is missing."
             );
 
             return false;

@@ -15,7 +15,7 @@ public class ProceduralGrappleSettings : ScriptableObject
 
   [Header("Point Placement")]
   [SerializeField]
-  private float verticalOffset = 0.75f;
+  private float distanceFromPlatform = 0.75f;
 
   public bool Enabled =>
       enabled;
@@ -23,6 +23,6 @@ public class ProceduralGrappleSettings : ScriptableObject
   public int MaximumConnections =>
       maximumConnections;
 
-  public float VerticalOffset =>
-      verticalOffset;
+  public float DistanceFromPlatform =>
+      distanceFromPlatform;
 }

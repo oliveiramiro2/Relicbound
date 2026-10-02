@@ -10,13 +10,13 @@ public class GrappleConnectionGenerator
 
   private readonly int maximumConnections;
 
-  private readonly float verticalOffset;
+  private readonly float distanceFromPlatform;
 
   public GrappleConnectionGenerator(
       GameObject grapplePointPrefab,
       float grappleDistance,
       int maximumConnections,
-      float verticalOffset
+      float distanceFromPlatform
   )
   {
     this.grapplePointPrefab =
@@ -34,8 +34,11 @@ public class GrappleConnectionGenerator
             maximumConnections
         );
 
-    this.verticalOffset =
-        verticalOffset;
+    this.distanceFromPlatform =
+        Mathf.Max(
+            0f,
+            distanceFromPlatform
+        );
   }
 
   public GrappleConnectionResult Generate(
@@ -48,35 +51,15 @@ public class GrappleConnectionGenerator
         connections =
         new List<GrappleConnection>();
 
-    if (graph == null)
+    if (!ValidateInput(
+            graph,
+            parent,
+            random))
+    {
       return new GrappleConnectionResult(
           connections
       );
-
-    if (parent == null)
-      return new GrappleConnectionResult(
-          connections
-      );
-
-    if (random == null)
-      return new GrappleConnectionResult(
-          connections
-      );
-
-    if (grapplePointPrefab == null)
-      return new GrappleConnectionResult(
-          connections
-      );
-
-    if (grappleDistance <= 0f)
-      return new GrappleConnectionResult(
-          connections
-      );
-
-    if (maximumConnections <= 0)
-      return new GrappleConnectionResult(
-          connections
-      );
+    }
 
     List<GrappleCandidate>
         candidates =
@@ -88,10 +71,6 @@ public class GrappleConnectionGenerator
         candidates,
         random
     );
-
-    HashSet<GeneratedPlatform>
-        platformsWithPoints =
-        new HashSet<GeneratedPlatform>();
 
     foreach (
         GrappleCandidate candidate
@@ -111,16 +90,16 @@ public class GrappleConnectionGenerator
         continue;
       }
 
-      EnsureGrapplePoint(
+      CreateGrapplePoint(
           candidate.From,
-          parent,
-          platformsWithPoints
+          candidate.To,
+          parent
       );
 
-      EnsureGrapplePoint(
+      CreateGrapplePoint(
           candidate.To,
-          parent,
-          platformsWithPoints
+          candidate.From,
+          parent
       );
 
       graph.Connect(
@@ -143,6 +122,27 @@ public class GrappleConnectionGenerator
 
     return new GrappleConnectionResult(
         connections
+    );
+  }
+
+  private void CreateGrapplePoint(
+      GeneratedPlatform platform,
+      GeneratedPlatform target,
+      Transform parent
+  )
+  {
+    Vector2 position =
+        GrapplePointPlacement.Calculate(
+            platform,
+            target,
+            distanceFromPlatform
+        );
+
+    UnityEngine.Object.Instantiate(
+        grapplePointPrefab,
+        position,
+        Quaternion.identity,
+        parent
     );
   }
 
@@ -223,48 +223,31 @@ public class GrappleConnectionGenerator
     return false;
   }
 
-  private void EnsureGrapplePoint(
-      GeneratedPlatform platform,
+  private bool ValidateInput(
+      PlatformGraph graph,
       Transform parent,
-      HashSet<GeneratedPlatform>
-          platformsWithPoints
+      System.Random random
   )
   {
-    if (platform == null)
-      return;
+    if (graph == null)
+      return false;
 
-    if (platformsWithPoints.Contains(
-            platform))
-    {
-      return;
-    }
+    if (parent == null)
+      return false;
 
-    Vector2 pointPosition =
-        GetGrapplePointPosition(
-            platform
-        );
+    if (random == null)
+      return false;
 
-    UnityEngine.Object.Instantiate(
-        grapplePointPrefab,
-        pointPosition,
-        Quaternion.identity,
-        parent
-    );
+    if (grapplePointPrefab == null)
+      return false;
 
-    platformsWithPoints.Add(
-        platform
-    );
-  }
+    if (grappleDistance <= 0f)
+      return false;
 
-  private Vector2 GetGrapplePointPosition(
-      GeneratedPlatform platform
-  )
-  {
-    return new Vector2(
-        platform.Position.x,
-        platform.Bounds.yMax +
-        verticalOffset
-    );
+    if (maximumConnections <= 0)
+      return false;
+
+    return true;
   }
 
   private void Shuffle<T>(
@@ -275,7 +258,8 @@ public class GrappleConnectionGenerator
     for (
         int i = list.Count - 1;
         i > 0;
-        i--)
+        i--
+    )
     {
       int index =
           random.Next(

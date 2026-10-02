@@ -222,7 +222,9 @@ MonoBehaviour:
   generatedContent: {fileID: 3515987016122460806}
   settings: {fileID: 11400000, guid: a8252fd02eaf1574fa1a1c446b9f4449, type: 2}
   reachSettings: {fileID: 11400000, guid: 8fd9f8f34e0a31e429b9071ceab291e1, type: 2}
+  grappleSettings: {fileID: 11400000, guid: 6d4fc081f25bce042ac2c34c255bf621, type: 2}
   platformPrefab: {fileID: 8199609936405834456, guid: ff3850c0a76ba90408d8f35db4e0476d, type: 3}
+  grapplePointPrefab: {fileID: 1965000740138076945, guid: a43e010262852dc48897a8e63a1cb0eb, type: 3}
 --- !u!1 &7228812148016955409
 GameObject:
   m_ObjectHideFlags: 0

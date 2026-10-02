@@ -2,173 +2,244 @@ using UnityEngine;
 
 public class ProceduralRoom : MonoBehaviour
 {
-  [Header("Generation")]
-  [SerializeField]
-  private RoomGenerationBounds bounds;
+    [Header("Generation")]
+    [SerializeField]
+    private RoomGenerationBounds bounds;
 
-  [SerializeField]
-  private Transform generatedContent;
+    [SerializeField]
+    private Transform generatedContent;
 
-  [SerializeField]
-  private ProceduralRoomSettings settings;
+    [SerializeField]
+    private ProceduralRoomSettings settings;
 
-  [SerializeField]
-  private MovementReachSettings reachSettings;
+    [SerializeField]
+    private MovementReachSettings reachSettings;
 
-  [Header("Platforms")]
-  [SerializeField]
-  private GameObject platformPrefab;
+    [SerializeField]
+    private ProceduralGrappleSettings
+        grappleSettings;
 
-  public void Generate(
-      int seed,
-      int roomId
-  )
-  {
-    if (!ValidateReferences())
-      return;
+    [Header("Platforms")]
+    [SerializeField]
+    private GameObject platformPrefab;
 
-    int roomSeed =
-        RoomSeedUtility.CreateSeed(
-            seed,
-            roomId
+    [Header("Grapple")]
+    [SerializeField]
+    private GameObject grapplePointPrefab;
+
+    public void Generate(
+        int seed,
+        int roomId
+    )
+    {
+        if (!ValidateReferences())
+            return;
+
+        int roomSeed =
+            RoomSeedUtility.CreateSeed(
+                seed,
+                roomId
+            );
+
+        System.Random random =
+            new System.Random(
+                roomSeed
+            );
+
+        MovementReachProfile reachProfile =
+            reachSettings.CreateDefaultProfile();
+
+        PlatformGenerator platformGenerator =
+            new PlatformGenerator(
+                platformPrefab
+            );
+
+        PlatformGenerationResult result =
+            platformGenerator.Generate(
+                bounds,
+                random,
+                generatedContent,
+                settings.PlatformCount,
+                settings.MinimumPlatformSpacing,
+                reachProfile,
+                settings.MaximumAttemptsPerPlatform,
+                settings.MinimumBranches,
+                settings.MaximumBranches,
+                settings.MinimumBranchLength,
+                settings.MaximumBranchLength
+            );
+
+        if (grappleSettings.Enabled)
+        {
+            GenerateGrappleConnections(
+                result,
+                random
+            );
+        }
+
+        LogGenerationResult(
+            result
+        );
+    }
+
+    private void GenerateGrappleConnections(
+        PlatformGenerationResult result,
+        System.Random random
+    )
+    {
+        if (result == null)
+            return;
+
+        GrappleConnectionGenerator generator =
+            new GrappleConnectionGenerator(
+                grapplePointPrefab,
+                reachSettings
+                    .GrappleDistance,
+                grappleSettings
+                    .MaximumConnections,
+                grappleSettings
+                    .VerticalOffset
+            );
+
+        GrappleConnectionResult
+            grappleResult =
+            generator.Generate(
+                result.Graph,
+                generatedContent,
+                random
+            );
+
+        Debug.Log(
+            $"ProceduralRoom [{name}] " +
+            $"generated " +
+            $"{grappleResult.ConnectionCount} " +
+            $"grapple connections."
+        );
+    }
+
+    private void LogGenerationResult(
+        PlatformGenerationResult result
+    )
+    {
+        if (result == null)
+            return;
+
+        Debug.Log(
+            $"ProceduralRoom [{name}] " +
+            $"generated {result.GeneratedCount} platforms."
         );
 
-    System.Random random =
-        new System.Random(
-            roomSeed
+        Debug.Log(
+            $"Main Path: " +
+            $"{result.MainPathPlatforms.Count}"
         );
 
-    MovementReachProfile reachProfile =
-        reachSettings.CreateDefaultProfile();
-
-    PlatformGenerator platformGenerator =
-        new PlatformGenerator(
-            platformPrefab
+        Debug.Log(
+            $"Branches: " +
+            $"{result.BranchPlatforms.Count}"
         );
 
-    PlatformGenerationResult result =
-        platformGenerator.Generate(
-            bounds,
-            random,
-            generatedContent,
-            settings.PlatformCount,
-            settings.MinimumPlatformSpacing,
-            reachProfile,
-            settings.MaximumAttemptsPerPlatform,
-            settings.MinimumBranches,
-            settings.MaximumBranches,
-            settings.MinimumBranchLength,
-            settings.MaximumBranchLength
+        Debug.Log(
+            $"Dead Ends: " +
+            $"{result.DeadEndPlatforms.Count}"
         );
 
-    LogGenerationResult(
-        result
-    );
-  }
+        if (result.StartPlatform != null)
+        {
+            Debug.Log(
+                $"Start Platform: " +
+                $"{result.StartPlatform.Position}"
+            );
+        }
 
-  private void LogGenerationResult(
-      PlatformGenerationResult result
-  )
-  {
-    if (result == null)
-      return;
-
-    Debug.Log(
-        $"ProceduralRoom [{name}] " +
-        $"generated {result.GeneratedCount} platforms."
-    );
-
-    Debug.Log(
-        $"Main Path: " +
-        $"{result.MainPathPlatforms.Count}"
-    );
-
-    Debug.Log(
-        $"Branches: " +
-        $"{result.BranchPlatforms.Count}"
-    );
-
-    Debug.Log(
-        $"Dead Ends: " +
-        $"{result.DeadEndPlatforms.Count}"
-    );
-
-    if (result.StartPlatform != null)
-    {
-      Debug.Log(
-          $"Start Platform: " +
-          $"{result.StartPlatform.Position}"
-      );
+        if (result.ExitPlatform != null)
+        {
+            Debug.Log(
+                $"Exit Platform: " +
+                $"{result.ExitPlatform.Position}"
+            );
+        }
+        else
+        {
+            Debug.LogWarning(
+                $"ProceduralRoom [{name}] " +
+                "did not generate a valid exit platform."
+            );
+        }
     }
 
-    if (result.ExitPlatform != null)
+    private bool ValidateReferences()
     {
-      Debug.Log(
-          $"Exit Platform: " +
-          $"{result.ExitPlatform.Position}"
-      );
+        if (bounds == null)
+        {
+            Debug.LogError(
+                $"ProceduralRoom on {name}: " +
+                "Generation Bounds is missing."
+            );
+
+            return false;
+        }
+
+        if (generatedContent == null)
+        {
+            Debug.LogError(
+                $"ProceduralRoom on {name}: " +
+                "Generated Content is missing."
+            );
+
+            return false;
+        }
+
+        if (settings == null)
+        {
+            Debug.LogError(
+                $"ProceduralRoom on {name}: " +
+                "Procedural Room Settings is missing."
+            );
+
+            return false;
+        }
+
+        if (reachSettings == null)
+        {
+            Debug.LogError(
+                $"ProceduralRoom on {name}: " +
+                "Movement Reach Settings is missing."
+            );
+
+            return false;
+        }
+
+        if (grappleSettings == null)
+        {
+            Debug.LogError(
+                $"ProceduralRoom on {name}: " +
+                "Procedural Grapple Settings is missing."
+            );
+
+            return false;
+        }
+
+        if (platformPrefab == null)
+        {
+            Debug.LogError(
+                $"ProceduralRoom on {name}: " +
+                "Platform Prefab is missing."
+            );
+
+            return false;
+        }
+
+        if (grapplePointPrefab == null)
+        {
+            Debug.LogError(
+                $"ProceduralRoom on {name}: " +
+                "Grapple Point Prefab is missing."
+            );
+
+            return false;
+        }
+
+        return true;
     }
-    else
-    {
-      Debug.LogWarning(
-          $"ProceduralRoom [{name}] " +
-          "did not generate a valid exit platform."
-      );
-    }
-  }
-
-  private bool ValidateReferences()
-  {
-    if (bounds == null)
-    {
-      Debug.LogError(
-          $"ProceduralRoom on {name}: " +
-          "Generation Bounds is missing."
-      );
-
-      return false;
-    }
-
-    if (generatedContent == null)
-    {
-      Debug.LogError(
-          $"ProceduralRoom on {name}: " +
-          "Generated Content is missing."
-      );
-
-      return false;
-    }
-
-    if (settings == null)
-    {
-      Debug.LogError(
-          $"ProceduralRoom on {name}: " +
-          "Procedural Room Settings is missing."
-      );
-
-      return false;
-    }
-
-    if (reachSettings == null)
-    {
-      Debug.LogError(
-          $"ProceduralRoom on {name}: " +
-          "Movement Reach Settings is missing."
-      );
-
-      return false;
-    }
-
-    if (platformPrefab == null)
-    {
-      Debug.LogError(
-          $"ProceduralRoom on {name}: " +
-          "Platform Prefab is missing."
-      );
-
-      return false;
-    }
-
-    return true;
-  }
 }

@@ -7,22 +7,33 @@ using UnityEngine;
 public class ProceduralRoomMarkerSettings :
     ScriptableObject
 {
-  [Header("Placement")]
+  [Header("Player Spawn")]
   [SerializeField]
-  private float verticalOffset = 1f;
+  private float playerSpawnVerticalOffset = 1f;
 
+  [Header("Room Entry")]
   [SerializeField]
-  private float exitVerticalOffset = 1f;
+  private float roomEntryVerticalOffset = 1f;
 
-  public float VerticalOffset =>
+  [Header("Room Exit")]
+  [SerializeField]
+  private float roomExitVerticalOffset = 1f;
+
+  public float PlayerSpawnVerticalOffset =>
       Mathf.Max(
           0f,
-          verticalOffset
+          playerSpawnVerticalOffset
       );
 
-  public float ExitVerticalOffset =>
+  public float RoomEntryVerticalOffset =>
       Mathf.Max(
           0f,
-          exitVerticalOffset
+          roomEntryVerticalOffset
+      );
+
+  public float RoomExitVerticalOffset =>
+      Mathf.Max(
+          0f,
+          roomExitVerticalOffset
       );
 }

@@ -14,4 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ProceduralGrappleSettings
   enabled: 1
   maximumConnections: 1
-  distanceFromPlatform: 8
+  distanceFromPlatform: 5

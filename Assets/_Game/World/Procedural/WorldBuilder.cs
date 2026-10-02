@@ -4,12 +4,20 @@ public class WorldBuilder
 {
   private readonly Transform worldRoot;
 
+  private GeneratedWorld generatedWorld;
+
+  public GeneratedWorld GeneratedWorld =>
+      generatedWorld;
+
   public WorldBuilder(
       Transform worldRoot
   )
   {
     this.worldRoot =
         worldRoot;
+
+    generatedWorld =
+        new GeneratedWorld();
   }
 
   public void Build(
@@ -22,6 +30,9 @@ public class WorldBuilder
 
     if (worldRoot == null)
       return;
+
+    generatedWorld =
+        new GeneratedWorld();
 
     foreach (
         WorldRoomLayout roomLayout
@@ -45,14 +56,32 @@ public class WorldBuilder
           );
 
       ProceduralRoom proceduralRoom =
-          roomObject.GetComponent<ProceduralRoom>();
+          roomObject.GetComponent<
+              ProceduralRoom>();
 
       if (proceduralRoom == null)
+      {
+        Object.Destroy(
+            roomObject
+        );
+
         continue;
+      }
 
       proceduralRoom.Generate(
           seed,
           roomLayout.Room.Id
+      );
+
+      GeneratedRoom generatedRoom =
+          new GeneratedRoom(
+              roomLayout.Room,
+              roomObject,
+              proceduralRoom.MarkerResult
+          );
+
+      generatedWorld.AddRoom(
+          generatedRoom
       );
     }
   }

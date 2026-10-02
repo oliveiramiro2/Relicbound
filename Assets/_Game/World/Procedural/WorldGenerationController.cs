@@ -1,18 +1,36 @@
 using UnityEngine;
 
-public class WorldGenerationController : MonoBehaviour
+public class WorldGenerationController :
+    MonoBehaviour
 {
-    [Header("References")]
-    [SerializeField] private WorldSeed worldSeed;
-    [SerializeField] private WorldRoomTemplateDatabase database;
-    [SerializeField] private Transform worldRoot;
+    [SerializeField]
+    private WorldSeed worldSeed;
+
+    [SerializeField]
+    private WorldRoomTemplateDatabase
+        roomTemplateDatabase;
+
+    [SerializeField]
+    private Transform worldRoot;
+
+    [SerializeField]
+    private bool generateOnStart = true;
+
+    [SerializeField]
+    private RoomConnectionVisualizer
+        connectionVisualizer;
+
+    private GeneratedWorld generatedWorld;
 
     private void Start()
     {
+        if (!generateOnStart)
+            return;
+
         GenerateWorld();
     }
 
-    private void GenerateWorld()
+    public void GenerateWorld()
     {
         if (worldSeed == null)
         {
@@ -24,11 +42,12 @@ public class WorldGenerationController : MonoBehaviour
             return;
         }
 
-        if (database == null)
+        if (roomTemplateDatabase == null)
         {
             Debug.LogError(
                 "WorldGenerationController: " +
-                "Room Template Database is missing."
+                "WorldRoomTemplateDatabase " +
+                "is missing."
             );
 
             return;
@@ -38,23 +57,24 @@ public class WorldGenerationController : MonoBehaviour
         {
             Debug.LogError(
                 "WorldGenerationController: " +
-                "World Root is missing."
+                "WorldRoot is missing."
             );
 
             return;
         }
 
-        WorldGenerator worldGenerator =
+        WorldGenerator generator =
             new WorldGenerator();
 
         WorldRoomGraph graph =
-            worldGenerator.Generate(
+            generator.Generate(
                 worldSeed.Seed
             );
 
-        WorldLayoutGenerator layoutGenerator =
+        WorldLayoutGenerator
+            layoutGenerator =
             new WorldLayoutGenerator(
-                database
+                roomTemplateDatabase
             );
 
         WorldLayout layout =
@@ -72,5 +92,37 @@ public class WorldGenerationController : MonoBehaviour
             layout,
             worldSeed.Seed
         );
+
+        generatedWorld =
+            builder.GeneratedWorld;
+
+        WorldRoomConnectionGenerator
+            connectionGenerator =
+            new WorldRoomConnectionGenerator();
+
+        RoomConnectionResult
+            connectionResult =
+            connectionGenerator.Generate(
+                generatedWorld
+            );
+
+        if (connectionVisualizer != null)
+        {
+            connectionVisualizer.Visualize(
+                connectionResult
+            );
+        }
+
+        Debug.Log(
+            "WorldGenerationController: " +
+            "Generated " +
+            generatedWorld.Rooms.Count +
+            " room(s) and " +
+            connectionResult.Count +
+            " connection(s)."
+        );
     }
+
+    public GeneratedWorld GeneratedWorld =>
+        generatedWorld;
 }

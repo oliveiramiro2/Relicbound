@@ -1,5 +1,81 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &67339183126823323
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3301088241448177447}
+  - component: {fileID: 6328651973208763888}
+  m_Layer: 0
+  m_Name: GenerationBounds
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3301088241448177447
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 67339183126823323}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5845022823545718121}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6328651973208763888
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 67339183126823323}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b24734f6c5f7c02428cf22fe2a5c1b01, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RoomGenerationBounds
+  size: {x: 23, y: 6}
+--- !u!1 &1539384530842410605
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2017878611520416021}
+  m_Layer: 0
+  m_Name: GeneratedContent
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2017878611520416021
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1539384530842410605}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5845022823545718121}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &5006879559555215447
 GameObject:
   m_ObjectHideFlags: 0
@@ -148,6 +224,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5845022823545718121}
+  - component: {fileID: 9081852572460365121}
   m_Layer: 0
   m_Name: StartRoom_A
   m_TagString: Untagged
@@ -169,5 +246,35 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2279585770079361114}
+  - {fileID: 3301088241448177447}
+  - {fileID: 2017878611520416021}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &9081852572460365121
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7418264052976544835}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6480896ae5345c447a687b0d2dd2f79b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ProceduralRoom
+  bounds: {fileID: 6328651973208763888}
+  generatedContent: {fileID: 2017878611520416021}
+  settings: {fileID: 11400000, guid: a8252fd02eaf1574fa1a1c446b9f4449, type: 2}
+  reachSettings: {fileID: 11400000, guid: 8fd9f8f34e0a31e429b9071ceab291e1, type: 2}
+  grappleSettings: {fileID: 11400000, guid: 6d4fc081f25bce042ac2c34c255bf621, type: 2}
+  platformPrefab: {fileID: 8199609936405834456, guid: ff3850c0a76ba90408d8f35db4e0476d, type: 3}
+  grapplePointPrefab: {fileID: 1965000740138076945, guid: a43e010262852dc48897a8e63a1cb0eb, type: 3}
+  contentSettings: {fileID: 11400000, guid: 6b8f870c05c88bf448ed8947423c6af0, type: 2}
+  hazardPrefab: {fileID: 485366355099859923, guid: 63700ee31b61562419ef8733521e40c2, type: 3}
+  relicSettings: {fileID: 11400000, guid: 52ff6a08f40accb41a3405a57957b2c7, type: 2}
+  relicDatabase: {fileID: 11400000, guid: d421671f9ab37d64581fa3c418d37fbe, type: 2}
+  relicPickupPrefab: {fileID: 6998959507119129601, guid: e999cebd376541e4c8f3d6d651552612, type: 3}
+  markerSettings: {fileID: 11400000, guid: a891038887e80b147a4871f125bf9a7e, type: 2}
+  playerSpawnPrefab: {fileID: 9004795238276958273, guid: 689ae2b060a40fd4f9f5dd240961ad9f, type: 3}
+  roomExitPrefab: {fileID: 7698196766828646617, guid: 6fc0ae6b5629f3d4fa764f3c1f72c410, type: 3}
+  roomEntryPrefab: {fileID: 2224510003026983425, guid: 1c03b3f933903a74481a1665f13619d5, type: 3}

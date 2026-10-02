@@ -17,5 +17,5 @@ MonoBehaviour:
   maximumBranches: 5
   minimumBranchLength: 1
   maximumBranchLength: 5
-  minimumPlatformSpacing: 2
+  minimumPlatformSpacing: 3
   maximumAttemptsPerPlatform: 30

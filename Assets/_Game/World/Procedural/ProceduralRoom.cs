@@ -55,6 +55,13 @@ public class ProceduralRoom : MonoBehaviour
 
     [SerializeField]
     private GameObject roomExitPrefab;
+    [SerializeField]
+    private GameObject roomEntryPrefab;
+
+    private RoomMarkerGenerationResult markerResult;
+
+    public RoomMarkerGenerationResult MarkerResult =>
+        markerResult;
 
     public void Generate(
         int seed,
@@ -256,8 +263,8 @@ public class ProceduralRoom : MonoBehaviour
     }
 
     private void GenerateRoomMarkers(
-    PlatformGenerationResult result
-)
+        PlatformGenerationResult result
+    )
     {
         if (markerSettings == null)
             return;
@@ -265,13 +272,14 @@ public class ProceduralRoom : MonoBehaviour
         RoomMarkerGenerator generator =
             new RoomMarkerGenerator(
                 playerSpawnPrefab,
+                roomEntryPrefab,
                 roomExitPrefab,
-                markerSettings.VerticalOffset,
-                markerSettings.ExitVerticalOffset
+                markerSettings.PlayerSpawnVerticalOffset,
+                markerSettings.RoomEntryVerticalOffset,
+                markerSettings.RoomExitVerticalOffset
             );
 
-        RoomMarkerGenerationResult
-            markerResult =
+        markerResult =
             generator.Generate(
                 result,
                 generatedContent
@@ -283,6 +291,15 @@ public class ProceduralRoom : MonoBehaviour
                 "ProceduralRoom: " +
                 "Player spawn generated at " +
                 markerResult.PlayerSpawn.Position
+            );
+        }
+
+        if (markerResult.RoomEntry != null)
+        {
+            Debug.Log(
+                "ProceduralRoom: " +
+                "Room entry generated at " +
+                markerResult.RoomEntry.Position
             );
         }
 

@@ -1920,6 +1920,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1562507661}
   - component: {fileID: 1562507660}
+  - component: {fileID: 1562507662}
   m_Layer: 0
   m_Name: WorldGenerationController
   m_TagString: Untagged
@@ -1940,8 +1941,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WorldGenerationController
   worldSeed: {fileID: 132198207}
-  database: {fileID: 11400000, guid: 8509852c17e72984fa82e96c2c7f835c, type: 2}
+  roomTemplateDatabase: {fileID: 11400000, guid: 8509852c17e72984fa82e96c2c7f835c, type: 2}
   worldRoot: {fileID: 1835150081}
+  generateOnStart: 1
+  connectionVisualizer: {fileID: 1562507662}
 --- !u!4 &1562507661
 Transform:
   m_ObjectHideFlags: 0
@@ -1957,6 +1960,20 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1562507662
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1562507659}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ef061926798c89f42985987088a84098, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RoomConnectionVisualizer
+  connectionColor: {r: 0, g: 1, b: 1, a: 1}
+  connectionWidth: 0.08
 --- !u!1001 &1709153850
 PrefabInstance:
   m_ObjectHideFlags: 0

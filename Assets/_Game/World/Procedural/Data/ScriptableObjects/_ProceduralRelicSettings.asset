@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: _ProceduralRelicSettings
   m_EditorClassIdentifier: Assembly-CSharp::ProceduralRelicSettings
   generateRelics: 1
-  minimumRelicsPerRoom: 1
+  minimumRelicsPerRoom: 0
   maximumRelicsPerRoom: 2
   verticalOffset: 1
   preferBranches: 1

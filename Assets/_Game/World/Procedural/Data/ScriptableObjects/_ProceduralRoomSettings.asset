@@ -12,9 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3fa649145ba8beb458ff7da4ac1448ed, type: 3}
   m_Name: _ProceduralRoomSettings
   m_EditorClassIdentifier: Assembly-CSharp::ProceduralRoomSettings
-  platformCount: 5
+  platformCount: 4
+  minimumBranches: 1
+  maximumBranches: 5
+  minimumBranchLength: 1
+  maximumBranchLength: 5
   minimumPlatformSpacing: 2
-  maximumHorizontalDistance: 5
-  maximumVerticalDistance: 2.5
-  minimumVerticalDistance: -1
   maximumAttemptsPerPlatform: 30

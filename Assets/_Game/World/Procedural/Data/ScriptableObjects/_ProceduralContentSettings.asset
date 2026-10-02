@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: _ProceduralContentSettings
   m_EditorClassIdentifier: Assembly-CSharp::ProceduralContentSettings
   generateHazards: 1
-  maximumHazardsPerRoom: 3
+  maximumHazardsPerRoom: 1
   minimumDistanceFromPlatformEdge: 0.75

@@ -45,6 +45,17 @@ public class ProceduralRoom : MonoBehaviour
     [SerializeField]
     private GameObject relicPickupPrefab;
 
+    [Header("Room Markers")]
+    [SerializeField]
+    private ProceduralRoomMarkerSettings
+    markerSettings;
+
+    [SerializeField]
+    private GameObject playerSpawnPrefab;
+
+    [SerializeField]
+    private GameObject roomExitPrefab;
+
     public void Generate(
         int seed,
         int roomId
@@ -103,6 +114,10 @@ public class ProceduralRoom : MonoBehaviour
         GenerateRelics(
             result,
             random
+        );
+
+        GenerateRoomMarkers(
+            result
         );
 
         LogGenerationResult(
@@ -238,6 +253,47 @@ public class ProceduralRoom : MonoBehaviour
             generationResult.Count +
             " relic(s)."
         );
+    }
+
+    private void GenerateRoomMarkers(
+    PlatformGenerationResult result
+)
+    {
+        if (markerSettings == null)
+            return;
+
+        RoomMarkerGenerator generator =
+            new RoomMarkerGenerator(
+                playerSpawnPrefab,
+                roomExitPrefab,
+                markerSettings.VerticalOffset,
+                markerSettings.ExitVerticalOffset
+            );
+
+        RoomMarkerGenerationResult
+            markerResult =
+            generator.Generate(
+                result,
+                generatedContent
+            );
+
+        if (markerResult.PlayerSpawn != null)
+        {
+            Debug.Log(
+                "ProceduralRoom: " +
+                "Player spawn generated at " +
+                markerResult.PlayerSpawn.Position
+            );
+        }
+
+        if (markerResult.RoomExit != null)
+        {
+            Debug.Log(
+                "ProceduralRoom: " +
+                "Room exit generated at " +
+                markerResult.RoomExit.Position
+            );
+        }
     }
 
     private void LogGenerationResult(

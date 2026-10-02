@@ -230,6 +230,9 @@ MonoBehaviour:
   relicSettings: {fileID: 11400000, guid: 52ff6a08f40accb41a3405a57957b2c7, type: 2}
   relicDatabase: {fileID: 11400000, guid: d421671f9ab37d64581fa3c418d37fbe, type: 2}
   relicPickupPrefab: {fileID: 6998959507119129601, guid: e999cebd376541e4c8f3d6d651552612, type: 3}
+  markerSettings: {fileID: 11400000, guid: a891038887e80b147a4871f125bf9a7e, type: 2}
+  playerSpawnPrefab: {fileID: 9004795238276958273, guid: 689ae2b060a40fd4f9f5dd240961ad9f, type: 3}
+  roomExitPrefab: {fileID: 7698196766828646617, guid: 6fc0ae6b5629f3d4fa764f3c1f72c410, type: 3}
 --- !u!1 &7228812148016955409
 GameObject:
   m_ObjectHideFlags: 0

@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: _MovementReachSettings
   m_EditorClassIdentifier: Assembly-CSharp::MovementReachSettings
   maximumHorizontalDistance: 5
-  maximumVerticalUpDistance: 2
-  maximumVerticalDownDistance: 2
+  maximumVerticalUpDistance: 1.4
+  maximumVerticalDownDistance: 1.4
   dashHorizontalBonus: 2.5
-  dashVerticalBonus: 1.5
-  grappleDistance: 8
+  dashVerticalBonus: 2
+  grappleDistance: 30

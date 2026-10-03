@@ -4,11 +4,14 @@ public class RoomMarkerGenerationResult
 
     public GeneratedRoomMarker RoomEntry { get; }
 
+    public GeneratedPlatform StartPlatform { get; }
+
     public GeneratedPlatform ExitPlatform { get; }
 
     public RoomMarkerGenerationResult(
         GeneratedRoomMarker playerSpawn,
         GeneratedRoomMarker roomEntry,
+        GeneratedPlatform startPlatform,
         GeneratedPlatform exitPlatform
     )
     {
@@ -17,6 +20,9 @@ public class RoomMarkerGenerationResult
 
         RoomEntry =
             roomEntry;
+
+        StartPlatform =
+            startPlatform;
 
         ExitPlatform =
             exitPlatform;

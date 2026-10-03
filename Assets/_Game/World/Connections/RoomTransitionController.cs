@@ -51,8 +51,8 @@ public class RoomTransitionController :
   }
 
   public void Transition(
-      RoomConnection connection
-  )
+    RoomConnection connection
+)
   {
     if (isTransitioning)
       return;
@@ -106,27 +106,11 @@ public class RoomTransitionController :
       return;
     }
 
-    if (targetRoom.Markers == null)
-      return;
-
-    GeneratedRoomMarker entry =
-        targetRoom.Markers.RoomEntry;
-
-    if (entry == null)
-    {
-      Debug.LogWarning(
-          "RoomTransitionController: " +
-          "Target room has no entry marker."
-      );
-
-      return;
-    }
-
     isTransitioning =
         true;
 
     MovePlayer(
-        entry.Position
+        connection.EntryPosition
     );
 
     currentRoom =

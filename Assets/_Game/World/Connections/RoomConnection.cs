@@ -17,9 +17,16 @@ public class RoomConnection
       Vector2 entryPosition
   )
   {
-    From = from;
-    To = to;
-    ExitPosition = exitPosition;
-    EntryPosition = entryPosition;
+    From =
+        from;
+
+    To =
+        to;
+
+    ExitPosition =
+        exitPosition;
+
+    EntryPosition =
+        entryPosition;
   }
 }

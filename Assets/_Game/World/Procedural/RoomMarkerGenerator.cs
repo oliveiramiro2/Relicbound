@@ -50,6 +50,7 @@ public class RoomMarkerGenerator
             return new RoomMarkerGenerationResult(
                 null,
                 null,
+                null,
                 null
             );
         }
@@ -77,6 +78,7 @@ public class RoomMarkerGenerator
         return new RoomMarkerGenerationResult(
             playerSpawn,
             roomEntry,
+            result.StartPlatform,
             result.ExitPlatform
         );
     }

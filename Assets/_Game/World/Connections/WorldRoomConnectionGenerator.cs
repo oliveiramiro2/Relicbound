@@ -1,88 +1,77 @@
 using System.Collections.Generic;
+using UnityEngine;
 
 public class WorldRoomConnectionGenerator
 {
-  public RoomConnectionResult Generate(
-      GeneratedWorld world
-  )
+  public RoomConnectionResult Generate(GeneratedWorld world)
   {
-    List<RoomConnection>
-        connections =
+    if (world == null)
+      return new RoomConnectionResult(
+          new List<RoomConnection>());
+
+    List<RoomConnection> connections =
         new List<RoomConnection>();
 
-    if (world == null)
-    {
-      return new RoomConnectionResult(
-          connections
-      );
-    }
-
-    foreach (
-        GeneratedRoom generatedRoom
-        in world.Rooms)
+    foreach (GeneratedRoom generatedRoom in world.Rooms)
     {
       if (generatedRoom == null)
         continue;
 
-      WorldRoom room =
-          generatedRoom.Room;
+      WorldRoom room = generatedRoom.Room;
 
       if (room == null)
         continue;
 
-      foreach (
-          WorldRoom connectedRoom
-          in room.Connections)
+      foreach (WorldRoom target in room.Connections)
       {
-        if (connectedRoom == null)
+        if (target == null)
           continue;
-
-        if (room.Id >=
-            connectedRoom.Id)
-        {
-          continue;
-        }
 
         GeneratedRoom targetRoom =
-            world.GetRoom(
-                connectedRoom
-            );
+            world.GetRoom(target);
 
         if (targetRoom == null)
           continue;
 
-        GeneratedRoomExit
-            generatedExit =
-            generatedRoom.Exits.Find(
-                connectedRoom
-            );
+        GeneratedRoomExit exit =
+            FindExit(
+                generatedRoom,
+                target);
 
-        if (generatedExit == null)
+        if (exit == null)
           continue;
 
-        GeneratedRoomMarker
-            entry =
-            targetRoom.Markers.RoomEntry;
+        Vector2 direction =
+            targetRoom.Instance.transform.position -
+            generatedRoom.Instance.transform.position;
 
-        if (entry == null)
-          continue;
+        Vector2 entryPosition =
+            RoomEntryPositionCalculator.Calculate(
+                targetRoom,
+                -direction);
 
         RoomConnection connection =
             new RoomConnection(
                 room,
-                connectedRoom,
-                generatedExit.Position,
-                entry.Position
-            );
+                target,
+                exit.Position,
+                entryPosition);
 
-        connections.Add(
-            connection
-        );
+        connections.Add(connection);
       }
     }
 
     return new RoomConnectionResult(
-        connections
-    );
+        connections);
+  }
+
+  private GeneratedRoomExit FindExit(
+      GeneratedRoom room,
+      WorldRoom target)
+  {
+    if (room == null || target == null)
+      return null;
+
+    return room.Exits.Find(target);
   }
 }

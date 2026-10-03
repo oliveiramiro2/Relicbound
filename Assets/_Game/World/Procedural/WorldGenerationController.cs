@@ -36,6 +36,9 @@ public class WorldGenerationController :
         2f
     );
 
+    [SerializeField]
+    private RoomTransitionController roomTransitionController;
+
     private void Start()
     {
         if (!generateOnStart)
@@ -109,6 +112,13 @@ public class WorldGenerationController :
 
         generatedWorld = builder.GeneratedWorld;
 
+        if (roomTransitionController != null)
+        {
+            roomTransitionController.Initialize(
+                generatedWorld
+            );
+        }
+
         WorldRoomExitGenerator exitGenerator =
             new WorldRoomExitGenerator(
                 roomExitPrefab,
@@ -138,7 +148,8 @@ public class WorldGenerationController :
 
         triggerGenerator.Generate(
             connectionResult,
-            worldRoot
+            worldRoot,
+            roomTransitionController
         );
 
         if (connectionVisualizer != null)

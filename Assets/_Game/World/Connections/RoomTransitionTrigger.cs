@@ -8,12 +8,19 @@ public class RoomTransitionTrigger :
 {
   private RoomConnection connection;
 
+  private RoomTransitionController
+      transitionController;
+
   public void Initialize(
-      RoomConnection roomConnection
+      RoomConnection roomConnection,
+      RoomTransitionController controller
   )
   {
     connection =
         roomConnection;
+
+    transitionController =
+        controller;
   }
 
   private void Awake()
@@ -21,7 +28,8 @@ public class RoomTransitionTrigger :
     Collider2D collider =
         GetComponent<Collider2D>();
 
-    collider.isTrigger = true;
+    collider.isTrigger =
+        true;
   }
 
   private void OnTriggerEnter2D(
@@ -31,6 +39,9 @@ public class RoomTransitionTrigger :
     if (connection == null)
       return;
 
+    if (transitionController == null)
+      return;
+
     PlayerMovement player =
         other.GetComponent<
             PlayerMovement>();
@@ -38,14 +49,7 @@ public class RoomTransitionTrigger :
     if (player == null)
       return;
 
-    RoomTransitionController controller =
-        FindAnyObjectByType<
-            RoomTransitionController>();
-
-    if (controller == null)
-      return;
-
-    controller.Transition(
+    transitionController.Transition(
         connection
     );
   }

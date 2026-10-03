@@ -100,6 +100,15 @@ public class PlayerMovement : MonoBehaviour
         rb.AddForce(Vector2.right * movement);
     }
 
+    public void ResetMovementState()
+    {
+        if (rb != null)
+        {
+            rb.linearVelocity = Vector2.zero;
+            rb.angularVelocity = 0f;
+        }
+    }
+
     private void HandleJump()
     {
         if (!playerInput.JumpPressed)

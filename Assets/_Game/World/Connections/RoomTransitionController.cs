@@ -30,13 +30,20 @@ public class RoomTransitionController : MonoBehaviour
   public bool IsTransitioning =>
       state != RoomTransitionState.Idle;
 
+  private PlayerMovement playerMovement;
+
   public void Initialize(
-      GeneratedWorld world)
+    GeneratedWorld world)
   {
     generatedWorld = world;
 
     currentRoom =
         FindStartRoom(world);
+
+    playerMovement =
+        player != null
+            ? player.GetComponent<PlayerMovement>()
+            : null;
 
     state =
         RoomTransitionState.Idle;
@@ -95,8 +102,8 @@ public class RoomTransitionController : MonoBehaviour
   }
 
   private IEnumerator PerformTransition(
-      RoomConnection connection,
-      GeneratedRoom targetRoom)
+    RoomConnection connection,
+    GeneratedRoom targetRoom)
   {
     state =
         RoomTransitionState.Exiting;
@@ -119,12 +126,18 @@ public class RoomTransitionController : MonoBehaviour
     MovePlayer(
         connection.EntryPosition);
 
+    if (playerMovement != null)
+      playerMovement.ResetMovementState();
+
     if (transitionFader != null)
     {
       yield return transitionFader
           .FadeInRoutine(
               fadeInDuration);
     }
+
+    if (playerMovement != null)
+      playerMovement.ResetMovementState();
 
     UnlockPlayer();
 
@@ -133,7 +146,7 @@ public class RoomTransitionController : MonoBehaviour
   }
 
   private void MovePlayer(
-      Vector2 position)
+    Vector2 position)
   {
     if (player == null)
     {
@@ -141,18 +154,6 @@ public class RoomTransitionController : MonoBehaviour
           "RoomTransitionController has no player.");
 
       return;
-    }
-
-    Rigidbody2D body =
-        player.GetComponent<Rigidbody2D>();
-
-    if (body != null)
-    {
-      body.linearVelocity =
-          Vector2.zero;
-
-      body.angularVelocity =
-          0f;
     }
 
     player.position =

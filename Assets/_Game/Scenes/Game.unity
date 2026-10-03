@@ -542,10 +542,10 @@ RectTransform:
   - {fileID: 223292027}
   m_Father: {fileID: 361455312}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 481.8, y: -104}
-  m_SizeDelta: {x: 943.35, y: 177.21}
+  m_AnchorMin: {x: 0, y: 0.628136}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: -0.2000122, y: -6}
+  m_SizeDelta: {x: -20.650024, y: -18.789978}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &205277120
 MonoBehaviour:
@@ -617,10 +617,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 1302567659}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 135.48}
-  m_SizeDelta: {x: 943.35, y: 47.64}
+  m_AnchorMin: {x: 0, y: 0.85558414}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 0.5, y: -3.0200043}
+  m_SizeDelta: {x: -7.6500244, y: 0.6399994}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &207034648
 MonoBehaviour:
@@ -671,7 +671,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 42.6
+  m_fontSize: 42.3
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -756,10 +756,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 205277119}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -0.0025101, y: -78.612}
-  m_SizeDelta: {x: 943.34, y: 19.987}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 0.112784885}
+  m_AnchoredPosition: {x: -0.0025024414, y: 1.8880005}
+  m_SizeDelta: {x: -6.659973, y: -1.0130005}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &223292028
 MonoBehaviour:
@@ -808,7 +808,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 17.85
+  m_fontSize: 17.4
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -997,10 +997,10 @@ RectTransform:
   - {fileID: 1302567659}
   m_Father: {fileID: 1296636842}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 515.53, y: -283.44}
-  m_SizeDelta: {x: 963.61, y: 533.89}
+  m_AnchorMin: {x: 0.029000001, y: 0.14141472}
+  m_AnchorMax: {x: 0.96771044, y: 0.9593114}
+  m_AnchoredPosition: {x: 6.0300293, y: 3.5599976}
+  m_SizeDelta: {x: 4.6099854, y: 11.890015}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &361455314
 MonoBehaviour:
@@ -1399,6 +1399,95 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1068013460
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1068013461}
+  - component: {fileID: 1068013463}
+  - component: {fileID: 1068013462}
+  - component: {fileID: 1068013464}
+  m_Layer: 5
+  m_Name: Fader
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1068013461
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1068013460}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1296636842}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: -0.25, y: 0}
+  m_SizeDelta: {x: -0.5, y: 0}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1068013462
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1068013460}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+  m_Material: {fileID: 0}
+  m_Color: {r: 0, g: 0, b: 0, a: 0}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 0}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!222 &1068013463
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1068013460}
+  m_CullTransparentMesh: 1
+--- !u!114 &1068013464
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1068013460}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 87ba77a703121a242ac57c261a52b832, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RoomTransitionFader
+  fadeImage: {fileID: 1068013462}
 --- !u!1 &1234157163
 GameObject:
   m_ObjectHideFlags: 0
@@ -1595,6 +1684,7 @@ RectTransform:
   m_LocalScale: {x: 0, y: 0, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 1068013461}
   - {fileID: 361455312}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1650,10 +1740,10 @@ RectTransform:
   - {fileID: 1234157164}
   m_Father: {fileID: 361455312}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 481.8, y: -364.45}
-  m_SizeDelta: {x: 943.35, y: 318.61}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 0.628136}
+  m_AnchoredPosition: {x: -0.2000122, y: 2.5499878}
+  m_SizeDelta: {x: -20.650024, y: -15.390015}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1302567660
 MonoBehaviour:
@@ -1805,10 +1895,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 205277119}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -0.000015259, y: 71.99}
-  m_SizeDelta: {x: 943.35, y: 33.22}
+  m_AnchorMin: {x: 0, y: 0.81385815}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: -0.000030517578, y: -2.0100021}
+  m_SizeDelta: {x: -6.6500244, y: -0.7799988}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1561981503
 MonoBehaviour:
@@ -1857,7 +1947,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 29.7
+  m_fontSize: 29.5
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -1992,6 +2082,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RoomTransitionController
   player: {fileID: 51475473}
+  transitionFader: {fileID: 1068013464}
+  fadeOutDuration: 0.2
+  fadeInDuration: 0.2
 --- !u!1001 &1709153850
 PrefabInstance:
   m_ObjectHideFlags: 0

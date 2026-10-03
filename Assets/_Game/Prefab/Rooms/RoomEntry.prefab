@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 3107544087484542455}
   - component: {fileID: 8410583081702912420}
   - component: {fileID: 4679887873756057285}
+  - component: {fileID: -7008075382506431349}
   m_Layer: 0
   m_Name: RoomEntry
   m_TagString: Untagged
@@ -105,3 +106,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7977494e769686e4187bc2a06d0e3be2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RoomEntryMarker
+--- !u!114 &-7008075382506431349
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2224510003026983425}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 679bebf73bf877a4e8c32083e0af5442, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ProceduralRoomMarker
+  type: 0

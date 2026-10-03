@@ -20,10 +20,16 @@ public class WorldRoomExitGenerator
         exitPrefab;
 
     this.horizontalOffset =
-        horizontalOffset;
+        Mathf.Max(
+            0f,
+            horizontalOffset
+        );
 
     this.verticalOffset =
-        verticalOffset;
+        Mathf.Max(
+            0f,
+            verticalOffset
+        );
   }
 
   public void Generate(
@@ -49,10 +55,11 @@ public class WorldRoomExitGenerator
       if (generatedRoom.Markers == null)
         continue;
 
-      GeneratedRoomMarker exitMarker =
-          generatedRoom.Markers.RoomExit;
+      GeneratedPlatform
+          exitPlatform =
+          generatedRoom.Markers.ExitPlatform;
 
-      if (exitMarker == null)
+      if (exitPlatform == null)
         continue;
 
       foreach (
@@ -70,13 +77,6 @@ public class WorldRoomExitGenerator
         if (targetRoom == null)
           continue;
 
-        GeneratedPlatform
-            platform =
-            exitMarker.Platform;
-
-        if (platform == null)
-          continue;
-
         RoomExitGenerator generator =
             new RoomExitGenerator(
                 exitPrefab,
@@ -88,7 +88,7 @@ public class WorldRoomExitGenerator
             generator.Generate(
                 room,
                 target,
-                platform,
+                exitPlatform,
                 generatedRoom.Instance.transform
             );
 

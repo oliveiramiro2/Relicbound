@@ -29,6 +29,13 @@ public class WorldGenerationController :
     private ProceduralRoomMarkerSettings
         markerSettings;
 
+    [SerializeField]
+    private Vector2 roomTransitionTriggerSize =
+    new Vector2(
+        2f,
+        2f
+    );
+
     private void Start()
     {
         if (!generateOnStart)
@@ -100,8 +107,7 @@ public class WorldGenerationController :
             worldSeed.Seed
         );
 
-        generatedWorld =
-            builder.GeneratedWorld;
+        generatedWorld = builder.GeneratedWorld;
 
         WorldRoomExitGenerator exitGenerator =
             new WorldRoomExitGenerator(
@@ -123,6 +129,17 @@ public class WorldGenerationController :
             connectionGenerator.Generate(
                 generatedWorld
             );
+
+        RoomConnectionTriggerGenerator
+            triggerGenerator =
+            new RoomConnectionTriggerGenerator(
+                roomTransitionTriggerSize
+            );
+
+        triggerGenerator.Generate(
+            connectionResult,
+            worldRoot
+        );
 
         if (connectionVisualizer != null)
         {

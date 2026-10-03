@@ -1,25 +1,24 @@
 public class RoomMarkerGenerationResult
 {
-  public GeneratedRoomMarker
-      PlayerSpawn
-  { get; }
+    public GeneratedRoomMarker PlayerSpawn { get; }
 
-  public GeneratedRoomMarker
-      RoomEntry
-  { get; }
+    public GeneratedRoomMarker RoomEntry { get; }
 
-  public GeneratedRoomMarker
-      RoomExit
-  { get; }
+    public GeneratedPlatform ExitPlatform { get; }
 
-  public RoomMarkerGenerationResult(
-      GeneratedRoomMarker playerSpawn,
-      GeneratedRoomMarker roomEntry,
-      GeneratedRoomMarker roomExit
-  )
-  {
-    PlayerSpawn = playerSpawn;
-    RoomEntry = roomEntry;
-    RoomExit = roomExit;
-  }
+    public RoomMarkerGenerationResult(
+        GeneratedRoomMarker playerSpawn,
+        GeneratedRoomMarker roomEntry,
+        GeneratedPlatform exitPlatform
+    )
+    {
+        PlayerSpawn =
+            playerSpawn;
+
+        RoomEntry =
+            roomEntry;
+
+        ExitPlatform =
+            exitPlatform;
+    }
 }

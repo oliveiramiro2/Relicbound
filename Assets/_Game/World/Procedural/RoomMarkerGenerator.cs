@@ -3,8 +3,8 @@ using UnityEngine;
 public class RoomMarkerGenerator
 {
     private readonly GameObject playerSpawnPrefab;
+
     private readonly GameObject roomEntryPrefab;
-    private readonly GameObject roomExitPrefab;
 
     private readonly float
         playerSpawnVerticalOffset;
@@ -12,16 +12,11 @@ public class RoomMarkerGenerator
     private readonly float
         roomEntryVerticalOffset;
 
-    private readonly float
-        roomExitVerticalOffset;
-
     public RoomMarkerGenerator(
         GameObject playerSpawnPrefab,
         GameObject roomEntryPrefab,
-        GameObject roomExitPrefab,
         float playerSpawnVerticalOffset,
-        float roomEntryVerticalOffset,
-        float roomExitVerticalOffset
+        float roomEntryVerticalOffset
     )
     {
         this.playerSpawnPrefab =
@@ -29,9 +24,6 @@ public class RoomMarkerGenerator
 
         this.roomEntryPrefab =
             roomEntryPrefab;
-
-        this.roomExitPrefab =
-            roomExitPrefab;
 
         this.playerSpawnVerticalOffset =
             Mathf.Max(
@@ -44,18 +36,12 @@ public class RoomMarkerGenerator
                 0f,
                 roomEntryVerticalOffset
             );
-
-        this.roomExitVerticalOffset =
-            Mathf.Max(
-                0f,
-                roomExitVerticalOffset
-            );
     }
 
     public RoomMarkerGenerationResult Generate(
-      PlatformGenerationResult result,
-      Transform parent
-  )
+        PlatformGenerationResult result,
+        Transform parent
+    )
     {
         if (!ValidateInput(
                 result,
@@ -88,13 +74,10 @@ public class RoomMarkerGenerator
                     .RoomEntry
             );
 
-        GeneratedRoomMarker roomExit =
-            null;
-
         return new RoomMarkerGenerationResult(
             playerSpawn,
             roomEntry,
-            roomExit
+            result.ExitPlatform
         );
     }
 
@@ -103,7 +86,7 @@ public class RoomMarkerGenerator
         Transform parent,
         GameObject prefab,
         float verticalOffset,
-        ProceduralRoomMarker.MarkerType type
+        ProceduralRoomMarker.MarkerType markerType
     )
     {
         if (platform == null)
@@ -118,7 +101,7 @@ public class RoomMarkerGenerator
 
         if (prefab != null)
         {
-            UnityEngine.Object.Instantiate(
+            Object.Instantiate(
                 prefab,
                 position,
                 Quaternion.identity,
@@ -129,7 +112,7 @@ public class RoomMarkerGenerator
         return new GeneratedRoomMarker(
             platform,
             position,
-            type
+            markerType
         );
     }
 

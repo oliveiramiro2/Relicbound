@@ -9,22 +9,22 @@ public class ProceduralRoomMarkerSettings :
 {
     [Header("Player Spawn")]
     [SerializeField]
-    private float playerSpawnVerticalOffset = 1f;
+    private float playerSpawnVerticalOffset =
+        1f;
 
     [Header("Room Entry")]
     [SerializeField]
-    private float roomEntryVerticalOffset = 1f;
-
-    [Header("Room Exit")]
-    [SerializeField]
-    private float roomExitVerticalOffset = 1f;
+    private float roomEntryVerticalOffset =
+        1f;
 
     [Header("Connection Exit")]
     [SerializeField]
-    private float connectionExitHorizontalOffset = 1f;
+    private float connectionExitHorizontalOffset =
+        1f;
 
     [SerializeField]
-    private float connectionExitVerticalOffset = 1f;
+    private float connectionExitVerticalOffset =
+        1f;
 
     public float PlayerSpawnVerticalOffset =>
         Mathf.Max(
@@ -36,12 +36,6 @@ public class ProceduralRoomMarkerSettings :
         Mathf.Max(
             0f,
             roomEntryVerticalOffset
-        );
-
-    public float RoomExitVerticalOffset =>
-        Mathf.Max(
-            0f,
-            roomExitVerticalOffset
         );
 
     public float ConnectionExitHorizontalOffset =>

@@ -45,7 +45,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 679bebf73bf877a4e8c32083e0af5442, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ProceduralRoomMarker
-  type: 1
+  type: 2
 --- !u!212 &3732040526930183193
 SpriteRenderer:
   serializedVersion: 3

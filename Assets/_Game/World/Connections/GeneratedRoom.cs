@@ -8,6 +8,8 @@ public class GeneratedRoom
 
   public RoomMarkerGenerationResult Markers { get; }
 
+  public GeneratedRoomExits Exits { get; }
+
   public GeneratedRoom(
       WorldRoom room,
       GameObject instance,
@@ -15,7 +17,12 @@ public class GeneratedRoom
   )
   {
     Room = room;
+
     Instance = instance;
+
     Markers = markers;
+
+    Exits =
+        new GeneratedRoomExits();
   }
 }

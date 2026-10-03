@@ -22,6 +22,13 @@ public class WorldGenerationController :
 
     private GeneratedWorld generatedWorld;
 
+    [SerializeField]
+    private GameObject roomExitPrefab;
+
+    [SerializeField]
+    private ProceduralRoomMarkerSettings
+        markerSettings;
+
     private void Start()
     {
         if (!generateOnStart)
@@ -95,6 +102,17 @@ public class WorldGenerationController :
 
         generatedWorld =
             builder.GeneratedWorld;
+
+        WorldRoomExitGenerator exitGenerator =
+            new WorldRoomExitGenerator(
+                roomExitPrefab,
+                markerSettings.ConnectionExitHorizontalOffset,
+                markerSettings.ConnectionExitVerticalOffset
+            );
+
+        exitGenerator.Generate(
+            generatedWorld
+        );
 
         WorldRoomConnectionGenerator
             connectionGenerator =

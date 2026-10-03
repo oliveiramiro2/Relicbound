@@ -2,10 +2,12 @@ using System.Collections.Generic;
 
 public class GeneratedWorld
 {
-  private readonly List<GeneratedRoom> rooms =
+  private readonly List<GeneratedRoom>
+      rooms =
       new();
 
-  public IReadOnlyList<GeneratedRoom> Rooms =>
+  public IReadOnlyList<GeneratedRoom>
+      Rooms =>
       rooms;
 
   public void AddRoom(
@@ -15,7 +17,9 @@ public class GeneratedWorld
     if (room == null)
       return;
 
-    rooms.Add(room);
+    rooms.Add(
+        room
+    );
   }
 
   public GeneratedRoom GetRoom(

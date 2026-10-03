@@ -30,25 +30,18 @@ public class WorldRoomConnectionGenerator
       if (room == null)
         continue;
 
-      RoomMarkerGenerationResult
-          markers =
-          generatedRoom.Markers;
-
-      if (markers == null)
-        continue;
-
-      GeneratedRoomMarker exit =
-          markers.RoomExit;
-
-      if (exit == null)
-        continue;
-
       foreach (
           WorldRoom connectedRoom
           in room.Connections)
       {
         if (connectedRoom == null)
           continue;
+
+        if (room.Id >=
+            connectedRoom.Id)
+        {
+          continue;
+        }
 
         GeneratedRoom targetRoom =
             world.GetRoom(
@@ -58,30 +51,27 @@ public class WorldRoomConnectionGenerator
         if (targetRoom == null)
           continue;
 
-        RoomMarkerGenerationResult
-            targetMarkers =
-            targetRoom.Markers;
+        GeneratedRoomExit
+            generatedExit =
+            generatedRoom.Exits.Find(
+                connectedRoom
+            );
 
-        if (targetMarkers == null)
+        if (generatedExit == null)
           continue;
 
-        GeneratedRoomMarker entry =
-            targetMarkers.RoomEntry;
+        GeneratedRoomMarker
+            entry =
+            targetRoom.Markers.RoomEntry;
 
         if (entry == null)
           continue;
-
-        if (room.Id >=
-            connectedRoom.Id)
-        {
-          continue;
-        }
 
         RoomConnection connection =
             new RoomConnection(
                 room,
                 connectedRoom,
-                exit.Position,
+                generatedExit.Position,
                 entry.Position
             );
 

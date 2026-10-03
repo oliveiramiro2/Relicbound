@@ -11,6 +11,13 @@ public class RoomTransitionController :
   public bool IsTransitioning =>
       isTransitioning;
 
+  [SerializeField]
+  private Vector2 connectionEntryOffset =
+      new Vector2(
+          0f,
+          1f
+      );
+
   public void Transition(
       RoomConnection connection
   )
@@ -64,7 +71,8 @@ public class RoomTransitionController :
     isTransitioning = true;
 
     MovePlayer(
-        entry.Position
+      entry.Position +
+      connectionEntryOffset
     );
 
     isTransitioning = false;

@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: StartTemplate
   m_EditorClassIdentifier: Assembly-CSharp::WorldRoomTemplate
   roomType: 0
-  size: {x: 20, y: 6}
+  size: {x: 20, y: 20}
   prefab: {fileID: 7418264052976544835, guid: e75e7eced2d31f746b553cf787e711bc, type: 3}

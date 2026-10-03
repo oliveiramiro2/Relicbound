@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: ExitTemplate
   m_EditorClassIdentifier: Assembly-CSharp::WorldRoomTemplate
   roomType: 3
-  size: {x: 25, y: 6}
+  size: {x: 25, y: 20}
   prefab: {fileID: 1402853503041156371, guid: d6b97756677eb554c906f53883dde2e6, type: 3}

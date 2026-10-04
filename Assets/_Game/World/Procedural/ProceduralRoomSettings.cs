@@ -6,49 +6,84 @@ using UnityEngine;
 )]
 public class ProceduralRoomSettings : ScriptableObject
 {
-  [Header("Main Path")]
-  [SerializeField]
-  private int platformCount = 5;
+    [Header("Main Path")]
 
-  [Header("Branches")]
-  [SerializeField]
-  private int minimumBranches = 1;
+    [SerializeField]
+    private int platformCount = 5;
 
-  [SerializeField]
-  private int maximumBranches = 2;
+    [SerializeField]
+    [Range(0.1f, 0.45f)]
+    private float startHorizontalPosition = 0.15f;
 
-  [SerializeField]
-  private int minimumBranchLength = 1;
+    [SerializeField]
+    [Range(0.55f, 0.95f)]
+    private float exitHorizontalPosition = 0.85f;
 
-  [SerializeField]
-  private int maximumBranchLength = 3;
+    [SerializeField]
+    [Range(0f, 1f)]
+    private float mainPathVerticalVariation = 0.35f;
 
-  [Header("Platform Spacing")]
-  [SerializeField]
-  private float minimumPlatformSpacing = 1f;
+    [Header("Branches")]
 
-  [Header("Generation")]
-  [SerializeField]
-  private int maximumAttemptsPerPlatform = 30;
+    [SerializeField]
+    private int minimumBranches = 1;
 
-  public int PlatformCount =>
-      platformCount;
+    [SerializeField]
+    private int maximumBranches = 2;
 
-  public int MinimumBranches =>
-      minimumBranches;
+    [SerializeField]
+    private int minimumBranchLength = 1;
 
-  public int MaximumBranches =>
-      maximumBranches;
+    [SerializeField]
+    private int maximumBranchLength = 3;
 
-  public int MinimumBranchLength =>
-      minimumBranchLength;
+    [Header("Platform Spacing")]
 
-  public int MaximumBranchLength =>
-      maximumBranchLength;
+    [SerializeField]
+    private float minimumPlatformSpacing = 1f;
 
-  public float MinimumPlatformSpacing =>
-      minimumPlatformSpacing;
+    [Header("Generation")]
 
-  public int MaximumAttemptsPerPlatform =>
-      maximumAttemptsPerPlatform;
+    [SerializeField]
+    private int maximumAttemptsPerPlatform = 30;
+
+    public int PlatformCount =>
+        platformCount;
+
+    public float StartHorizontalPosition =>
+        Mathf.Clamp(
+            startHorizontalPosition,
+            0.1f,
+            0.45f
+        );
+
+    public float ExitHorizontalPosition =>
+        Mathf.Clamp(
+            exitHorizontalPosition,
+            0.55f,
+            0.95f
+        );
+
+    public float MainPathVerticalVariation =>
+        Mathf.Clamp01(
+            mainPathVerticalVariation
+        );
+
+    public int MinimumBranches =>
+        minimumBranches;
+
+    public int MaximumBranches =>
+        maximumBranches;
+
+    public int MinimumBranchLength =>
+        minimumBranchLength;
+
+    public int MaximumBranchLength =>
+        maximumBranchLength;
+
+    public float MinimumPlatformSpacing =>
+        minimumPlatformSpacing;
+
+    public int MaximumAttemptsPerPlatform =>
+        maximumAttemptsPerPlatform;
 }

@@ -57,15 +57,15 @@ public class PlatformGenerator
 
         List<GeneratedPlatform>
             mainPathPlatforms =
-                new List<GeneratedPlatform>();
+            new List<GeneratedPlatform>();
 
         List<GeneratedPlatform>
             branchPlatforms =
-                new List<GeneratedPlatform>();
+            new List<GeneratedPlatform>();
 
         List<GeneratedPlatform>
             deadEndPlatforms =
-                new List<GeneratedPlatform>();
+            new List<GeneratedPlatform>();
 
         if (!ValidateInput(
                 bounds,
@@ -126,6 +126,7 @@ public class PlatformGenerator
                 minX,
                 maxX,
                 minY,
+                maxY,
                 random,
                 parent,
                 graph,
@@ -160,11 +161,11 @@ public class PlatformGenerator
                 index == count - 1;
 
             GeneratedPlatform nextPlatform =
-                TryGeneratePlatform(
+                TryGenerateMainPathPlatform(
                     previousPlatform,
                     index,
+                    count,
                     isExit,
-                    PlatformRouteType.MainPath,
                     minX,
                     maxX,
                     minY,
@@ -179,9 +180,7 @@ public class PlatformGenerator
                 );
 
             if (nextPlatform == null)
-            {
                 break;
-            }
 
             ReachabilityCheckResult
                 reachability =
@@ -192,9 +191,7 @@ public class PlatformGenerator
                 );
 
             if (!reachability.IsReachable)
-            {
                 break;
-            }
 
             graph.Connect(
                 previousPlatform,
@@ -396,11 +393,9 @@ public class PlatformGenerator
             index++)
         {
             GeneratedPlatform branchPlatform =
-                TryGeneratePlatform(
+                TryGenerateBranchPlatform(
                     previousPlatform,
                     graph.Platforms.Count,
-                    false,
-                    PlatformRouteType.Branch,
                     minX,
                     maxX,
                     minY,
@@ -415,9 +410,7 @@ public class PlatformGenerator
                 );
 
             if (branchPlatform == null)
-            {
                 break;
-            }
 
             ReachabilityCheckResult
                 reachability =
@@ -428,9 +421,7 @@ public class PlatformGenerator
                 );
 
             if (!reachability.IsReachable)
-            {
                 break;
-            }
 
             graph.Connect(
                 previousPlatform,
@@ -453,9 +444,369 @@ public class PlatformGenerator
         return generatedPlatforms;
     }
 
+    private GeneratedPlatform
+        TryGenerateMainPathPlatform(
+            GeneratedPlatform previousPlatform,
+            int index,
+            int totalCount,
+            bool isExit,
+            float minX,
+            float maxX,
+            float minY,
+            float maxY,
+            System.Random random,
+            Transform parent,
+            PlatformGraph graph,
+            List<Rect> occupiedAreas,
+            float minimumSpacing,
+            MovementReachProfile reachProfile,
+            int maximumAttempts
+        )
+    {
+        for (
+            int attempt = 0;
+            attempt < maximumAttempts;
+            attempt++)
+        {
+            Vector2 candidate =
+                GenerateMainPathCandidate(
+                    previousPlatform,
+                    index,
+                    totalCount,
+                    isExit,
+                    minX,
+                    maxX,
+                    minY,
+                    maxY,
+                    random,
+                    reachProfile
+                );
+
+            Rect candidateBounds =
+                CreateRect(
+                    candidate
+                );
+
+            if (OverlapsAny(
+                    candidateBounds,
+                    occupiedAreas,
+                    minimumSpacing))
+            {
+                continue;
+            }
+
+            GeneratedPlatform
+                candidatePlatform =
+                new GeneratedPlatform(
+                    candidate,
+                    candidateBounds,
+                    index,
+                    false,
+                    isExit,
+                    PlatformRouteType.MainPath
+                );
+
+            ReachabilityCheckResult
+                reachability =
+                reachabilityValidator.Check(
+                    previousPlatform,
+                    candidatePlatform,
+                    reachProfile
+                );
+
+            if (!reachability.IsReachable)
+                continue;
+
+            return CreatePlatform(
+                candidate,
+                index,
+                false,
+                isExit,
+                PlatformRouteType.MainPath,
+                parent,
+                graph,
+                occupiedAreas
+            );
+        }
+
+        return null;
+    }
+
+    private GeneratedPlatform
+        TryGenerateBranchPlatform(
+            GeneratedPlatform previousPlatform,
+            int index,
+            float minX,
+            float maxX,
+            float minY,
+            float maxY,
+            System.Random random,
+            Transform parent,
+            PlatformGraph graph,
+            List<Rect> occupiedAreas,
+            float minimumSpacing,
+            MovementReachProfile reachProfile,
+            int maximumAttempts
+        )
+    {
+        for (
+            int attempt = 0;
+            attempt < maximumAttempts;
+            attempt++)
+        {
+            Vector2 candidate =
+                GenerateBranchCandidate(
+                    previousPlatform,
+                    minX,
+                    maxX,
+                    minY,
+                    maxY,
+                    random,
+                    reachProfile
+                );
+
+            Rect candidateBounds =
+                CreateRect(
+                    candidate
+                );
+
+            if (OverlapsAny(
+                candidateBounds,
+                occupiedAreas,
+                minimumSpacing))
+            {
+                continue;
+            }
+
+            GeneratedPlatform
+                candidatePlatform =
+                new GeneratedPlatform(
+                    candidate,
+                    candidateBounds,
+                    index,
+                    false,
+                    false,
+                    PlatformRouteType.Branch
+                );
+
+            ReachabilityCheckResult
+                reachability =
+                reachabilityValidator.Check(
+                    previousPlatform,
+                    candidatePlatform,
+                    reachProfile
+                );
+
+            if (!reachability.IsReachable)
+                continue;
+
+            return CreatePlatform(
+                candidate,
+                index,
+                false,
+                false,
+                PlatformRouteType.Branch,
+                parent,
+                graph,
+                occupiedAreas
+            );
+        }
+
+        return null;
+    }
+
+    private Vector2 GenerateMainPathCandidate(
+        GeneratedPlatform previousPlatform,
+        int index,
+        int totalCount,
+        bool isExit,
+        float minX,
+        float maxX,
+        float minY,
+        float maxY,
+        System.Random random,
+        MovementReachProfile reachProfile
+    )
+    {
+        float progress =
+            (float)index /
+            Mathf.Max(
+                1,
+                totalCount - 1
+            );
+
+        /*
+         * O caminho principal progride da esquerda
+         * para a direita.
+         *
+         * Não sorteamos mais livremente o X.
+         */
+        float targetX =
+            Mathf.Lerp(
+                minX,
+                maxX,
+                progress
+            );
+
+        /*
+         * Pequena variação horizontal para impedir
+         * que tudo fique perfeitamente alinhado.
+         */
+        float horizontalVariation =
+            reachProfile
+                .EffectiveHorizontalDistance *
+            0.25f;
+
+        float x =
+            targetX +
+            Mathf.Lerp(
+                -horizontalVariation,
+                horizontalVariation,
+                (float)random.NextDouble()
+            );
+
+        /*
+         * A última plataforma fica próxima do final
+         * da sala.
+         */
+        if (isExit)
+        {
+            x =
+                Mathf.Lerp(
+                    minX,
+                    maxX,
+                    0.90f
+                );
+        }
+
+        /*
+         * Variação vertical controlada.
+         */
+        float verticalRange =
+            (maxY - minY) *
+            0.35f;
+
+        float y =
+            Mathf.Lerp(
+                minY,
+                minY + verticalRange,
+                (float)random.NextDouble()
+            );
+
+        /*
+         * Mantemos a mudança vertical entre plataformas
+         * dentro do que o sistema de reachability consegue
+         * suportar.
+         */
+        float minimumY =
+            previousPlatform.Position.y -
+            reachProfile.EffectiveVerticalDownDistance;
+
+        float maximumY =
+            previousPlatform.Position.y +
+            reachProfile.EffectiveVerticalUpDistance;
+
+        y =
+            Mathf.Clamp(
+                y,
+                minimumY,
+                maximumY
+            );
+
+        y =
+            Mathf.Clamp(
+                y,
+                minY,
+                maxY
+            );
+
+        return new Vector2(
+            x,
+            y
+        );
+    }
+
+    private Vector2 GenerateBranchCandidate(
+        GeneratedPlatform previousPlatform,
+        float minX,
+        float maxX,
+        float minY,
+        float maxY,
+        System.Random random,
+        MovementReachProfile reachProfile
+    )
+    {
+        float horizontalDistance =
+            reachProfile
+                .EffectiveHorizontalDistance;
+
+        float upwardDistance =
+            reachProfile
+                .EffectiveVerticalUpDistance;
+
+        float downwardDistance =
+            reachProfile
+                .EffectiveVerticalDownDistance;
+
+        float horizontalOffset =
+            Mathf.Lerp(
+                -horizontalDistance * 0.65f,
+                horizontalDistance * 0.65f,
+                (float)random.NextDouble()
+            );
+
+        float verticalOffset;
+
+        if (random.NextDouble() < 0.5)
+        {
+            verticalOffset =
+                Mathf.Lerp(
+                    -downwardDistance * 0.75f,
+                    0f,
+                    (float)random.NextDouble()
+                );
+        }
+        else
+        {
+            verticalOffset =
+                Mathf.Lerp(
+                    0f,
+                    upwardDistance * 0.75f,
+                    (float)random.NextDouble()
+                );
+        }
+
+        float x =
+            previousPlatform.Position.x +
+            horizontalOffset;
+
+        float y =
+            previousPlatform.Position.y +
+            verticalOffset;
+
+        x =
+            Mathf.Clamp(
+                x,
+                minX,
+                maxX
+            );
+
+        y =
+            Mathf.Clamp(
+                y,
+                minY,
+                maxY
+            );
+
+        return new Vector2(
+            x,
+            y
+        );
+    }
+
     private GeneratedPlatform MarkAsDeadEnd(
-    GeneratedPlatform platform
-)
+        GeneratedPlatform platform
+    )
     {
         return platform;
     }
@@ -515,16 +866,36 @@ public class PlatformGenerator
             float minX,
             float maxX,
             float minY,
+            float maxY,
             System.Random random,
             Transform parent,
             PlatformGraph graph,
             List<Rect> occupiedAreas
         )
     {
+        /*
+         * Start fica na região inicial da sala,
+         * em vez de aparecer em qualquer X.
+         */
         float x =
             Mathf.Lerp(
                 minX,
                 maxX,
+                0.15f
+            );
+
+        /*
+         * Pequena variação para não deixar todas as
+         * salas visualmente idênticas.
+         */
+        float variation =
+            (maxX - minX) *
+            0.05f;
+
+        x +=
+            Mathf.Lerp(
+                -variation,
+                variation,
                 (float)random.NextDouble()
             );
 
@@ -543,172 +914,6 @@ public class PlatformGenerator
             parent,
             graph,
             occupiedAreas
-        );
-    }
-
-    private GeneratedPlatform
-        TryGeneratePlatform(
-            GeneratedPlatform previousPlatform,
-            int index,
-            bool isExit,
-            PlatformRouteType routeType,
-            float minX,
-            float maxX,
-            float minY,
-            float maxY,
-            System.Random random,
-            Transform parent,
-            PlatformGraph graph,
-            List<Rect> occupiedAreas,
-            float minimumSpacing,
-            MovementReachProfile reachProfile,
-            int maximumAttempts
-        )
-    {
-        for (
-            int attempt = 0;
-            attempt < maximumAttempts;
-            attempt++
-        )
-        {
-            Vector2 candidate =
-                GenerateCandidatePosition(
-                    previousPlatform.Position,
-                    minX,
-                    maxX,
-                    minY,
-                    maxY,
-                    random,
-                    reachProfile
-                );
-
-            Rect candidateBounds =
-                CreateRect(
-                    candidate
-                );
-
-            if (OverlapsAny(
-                    candidateBounds,
-                    occupiedAreas,
-                    minimumSpacing))
-            {
-                continue;
-            }
-
-            GeneratedPlatform
-                candidatePlatform =
-                new GeneratedPlatform(
-                    candidate,
-                    candidateBounds,
-                    index,
-                    false,
-                    isExit,
-                    routeType
-                );
-
-            ReachabilityCheckResult
-                reachability =
-                reachabilityValidator.Check(
-                    previousPlatform,
-                    candidatePlatform,
-                    reachProfile
-                );
-
-            if (!reachability.IsReachable)
-            {
-                continue;
-            }
-
-            return CreatePlatform(
-                candidate,
-                index,
-                false,
-                isExit,
-                routeType,
-                parent,
-                graph,
-                occupiedAreas
-            );
-        }
-
-        return null;
-    }
-
-    private Vector2 GenerateCandidatePosition(
-        Vector2 previousPosition,
-        float minX,
-        float maxX,
-        float minY,
-        float maxY,
-        System.Random random,
-        MovementReachProfile reachProfile
-    )
-    {
-        float horizontalDistance =
-            reachProfile
-                .EffectiveHorizontalDistance;
-
-        float upwardDistance =
-            reachProfile
-                .EffectiveVerticalUpDistance;
-
-        float downwardDistance =
-            reachProfile
-                .EffectiveVerticalDownDistance;
-
-        float horizontalOffset =
-            Mathf.Lerp(
-                -horizontalDistance,
-                horizontalDistance,
-                (float)random.NextDouble()
-            );
-
-        float verticalOffset;
-
-        if (random.NextDouble() < 0.5)
-        {
-            verticalOffset =
-                Mathf.Lerp(
-                    -downwardDistance,
-                    0f,
-                    (float)random.NextDouble()
-                );
-        }
-        else
-        {
-            verticalOffset =
-                Mathf.Lerp(
-                    0f,
-                    upwardDistance,
-                    (float)random.NextDouble()
-                );
-        }
-
-        float x =
-            previousPosition.x +
-            horizontalOffset;
-
-        float y =
-            previousPosition.y +
-            verticalOffset;
-
-        x =
-            Mathf.Clamp(
-                x,
-                minX,
-                maxX
-            );
-
-        y =
-            Mathf.Clamp(
-                y,
-                minY,
-                maxY
-            );
-
-        return new Vector2(
-            x,
-            y
         );
     }
 

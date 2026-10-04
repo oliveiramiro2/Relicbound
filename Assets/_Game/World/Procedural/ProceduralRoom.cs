@@ -138,20 +138,24 @@ public class ProceduralRoom : MonoBehaviour
         if (result == null)
             return;
 
-        GrappleConnectionGenerator generator =
+        GrappleConnectionGenerator grappleGenerator =
             new GrappleConnectionGenerator(
                 grapplePointPrefab,
-                reachSettings
-                    .GrappleDistance,
-                grappleSettings
-                    .MaximumConnections,
-                grappleSettings
-                    .DistanceFromPlatform
+                grappleSettings.MinimumGrappleDistance,
+                grappleSettings.MaximumGrappleDistance,
+                grappleSettings.MaximumConnections,
+                grappleSettings.MaximumConnectionsPerPlatform,
+                grappleSettings.DistanceFromPlatform,
+                grappleSettings.PreferredDistance,
+                grappleSettings.VerticalMovementWeight,
+                grappleSettings.HorizontalMovementWeight,
+                grappleSettings.DistanceWeight,
+                grappleSettings.SeparationWeight
             );
 
         GrappleConnectionResult
             grappleResult =
-            generator.Generate(
+            grappleGenerator.Generate(
                 result.Graph,
                 generatedContent,
                 random

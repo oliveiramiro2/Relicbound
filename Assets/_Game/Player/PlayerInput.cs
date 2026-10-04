@@ -59,6 +59,11 @@ public class PlayerInput : MonoBehaviour
         DashPressed = true;
     }
 
+    public void StopMovement()
+    {
+        MoveInput = Vector2.zero;
+    }
+
     private void LateUpdate()
     {
         JumpPressed = false;

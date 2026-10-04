@@ -106,6 +106,7 @@ public class PlayerMovement : MonoBehaviour
         {
             rb.linearVelocity = Vector2.zero;
             rb.angularVelocity = 0f;
+            playerInput.StopMovement();
         }
     }
 

@@ -14,4 +14,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ProceduralGrappleSettings
   enabled: 1
   maximumConnections: 3
-  distanceFromPlatform: 0.75
+  maximumConnectionsPerPlatform: 1
+  minimumConnectionDistance: 5
+  maximumConnectionDistance: 10
+  minimumDistanceFromPlatform: 5
+  preferredDistanceFromPlatform: 8
+  maximumDistanceFromPlatform: 10
+  midpointInfluence: 0.75
+  verticalOffset: 1.5
+  verticalMovementWeight: 0.7
+  horizontalMovementWeight: 0.9
+  distanceWeight: 0.8
+  routeDifferenceWeight: 0.7

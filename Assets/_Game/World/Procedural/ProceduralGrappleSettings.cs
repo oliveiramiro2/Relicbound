@@ -16,29 +16,39 @@ public class ProceduralGrappleSettings : ScriptableObject
     [SerializeField]
     private int maximumConnectionsPerPlatform = 1;
 
-    [Header("Distance")]
+    [Header("Connection Distance")]
     [SerializeField]
-    private float minimumGrappleDistance = 3f;
+    private float minimumConnectionDistance = 4f;
 
     [SerializeField]
-    private float maximumGrappleDistance = 8f;
+    private float maximumConnectionDistance = 10f;
 
-    [Header("Point Placement")]
+    [Header("Grapple Point")]
     [SerializeField]
-    private float distanceFromPlatform = 1.25f;
+    private float minimumDistanceFromPlatform = 2f;
+
+    [SerializeField]
+    private float preferredDistanceFromPlatform = 3f;
+
+    [SerializeField]
+    private float maximumDistanceFromPlatform = 5f;
+
+    [Header("Point Position")]
+    [SerializeField]
+    [Range(0f, 1f)]
+    private float midpointInfluence = 0.75f;
+
+    [SerializeField]
+    private float verticalOffset = 1.5f;
 
     [Header("Candidate Evaluation")]
     [SerializeField]
     [Range(0f, 1f)]
-    private float preferredDistance = 0.65f;
+    private float verticalMovementWeight = 0.4f;
 
     [SerializeField]
     [Range(0f, 1f)]
-    private float verticalMovementWeight = 0.35f;
-
-    [SerializeField]
-    [Range(0f, 1f)]
-    private float horizontalMovementWeight = 0.25f;
+    private float horizontalMovementWeight = 0.2f;
 
     [SerializeField]
     [Range(0f, 1f)]
@@ -46,41 +56,82 @@ public class ProceduralGrappleSettings : ScriptableObject
 
     [SerializeField]
     [Range(0f, 1f)]
-    private float separationWeight = 0.15f;
+    private float routeDifferenceWeight = 0.35f;
 
     public bool Enabled =>
         enabled;
 
     public int MaximumConnections =>
-        Mathf.Max(0, maximumConnections);
-
-    public int MaximumConnectionsPerPlatform =>
-        Mathf.Max(1, maximumConnectionsPerPlatform);
-
-    public float MinimumGrappleDistance =>
-        Mathf.Max(0f, minimumGrappleDistance);
-
-    public float MaximumGrappleDistance =>
         Mathf.Max(
-            MinimumGrappleDistance,
-            maximumGrappleDistance
+            0,
+            maximumConnections
         );
 
-    public float DistanceFromPlatform =>
-        Mathf.Max(0f, distanceFromPlatform);
+    public int MaximumConnectionsPerPlatform =>
+        Mathf.Max(
+            1,
+            maximumConnectionsPerPlatform
+        );
 
-    public float PreferredDistance =>
-        Mathf.Clamp01(preferredDistance);
+    public float MinimumConnectionDistance =>
+        Mathf.Max(
+            0f,
+            minimumConnectionDistance
+        );
+
+    public float MaximumConnectionDistance =>
+        Mathf.Max(
+            MinimumConnectionDistance,
+            maximumConnectionDistance
+        );
+
+    public float MinimumDistanceFromPlatform =>
+        Mathf.Max(
+            0f,
+            minimumDistanceFromPlatform
+        );
+
+    public float PreferredDistanceFromPlatform =>
+        Mathf.Max(
+            MinimumDistanceFromPlatform,
+            preferredDistanceFromPlatform
+        );
+
+    public float MaximumDistanceFromPlatform =>
+        Mathf.Max(
+            PreferredDistanceFromPlatform,
+            maximumDistanceFromPlatform
+        );
+
+    public float MidpointInfluence =>
+        Mathf.Clamp01(
+            midpointInfluence
+        );
+
+    public float VerticalOffset =>
+        verticalOffset;
 
     public float VerticalMovementWeight =>
-        Mathf.Max(0f, verticalMovementWeight);
+        Mathf.Max(
+            0f,
+            verticalMovementWeight
+        );
 
     public float HorizontalMovementWeight =>
-        Mathf.Max(0f, horizontalMovementWeight);
+        Mathf.Max(
+            0f,
+            horizontalMovementWeight
+        );
 
     public float DistanceWeight =>
-        Mathf.Max(0f, distanceWeight);
+        Mathf.Max(
+            0f,
+            distanceWeight
+        );
 
-    public float SeparationWeight =>
-        Mathf.Max(0f, separationWeight);
+    public float RouteDifferenceWeight =>
+        Mathf.Max(
+            0f,
+            routeDifferenceWeight
+        );
 }

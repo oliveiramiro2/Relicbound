@@ -3,121 +3,341 @@ using UnityEngine;
 public static class GrapplePointPlacement
 {
     public static Vector2 Calculate(
-        GeneratedPlatform platform,
-        GeneratedPlatform target,
-        float distanceFromPlatform
+        GeneratedPlatform from,
+        GeneratedPlatform to,
+        float minimumDistanceFromPlatform,
+        float preferredDistanceFromPlatform,
+        float maximumDistanceFromPlatform,
+        float midpointInfluence,
+        float verticalOffset
     )
     {
-        if (platform == null)
+        if (from == null)
             return Vector2.zero;
 
-        if (target == null)
-            return platform.Position;
+        if (to == null)
+            return from.Position;
+
+        Vector2 fromPosition =
+            from.Position;
+
+        Vector2 toPosition =
+            to.Position;
 
         Vector2 direction =
-            target.Position -
-            platform.Position;
+            toPosition -
+            fromPosition;
 
         if (direction.sqrMagnitude <= 0.001f)
         {
-            return new Vector2(
-                platform.Position.x,
-                platform.Bounds.yMax +
-                distanceFromPlatform
-            );
+            return fromPosition;
         }
 
         direction.Normalize();
 
-        Vector2 position =
-            GetSurfacePosition(
-                platform,
-                direction
+        Vector2 perpendicular =
+            new Vector2(
+                -direction.y,
+                direction.x
             );
-
-        position +=
-            direction *
-            distanceFromPlatform;
-
-        return position;
-    }
-
-    private static Vector2 GetSurfacePosition(
-        GeneratedPlatform platform,
-        Vector2 direction
-    )
-    {
-        Rect bounds =
-            platform.Bounds;
-
-        float horizontal =
-            Mathf.Abs(direction.x);
-
-        float vertical =
-            Mathf.Abs(direction.y);
 
         /*
-         * Predominantemente horizontal:
-         * usa uma das laterais da plataforma.
+         * O centro entre as plataformas é a base.
          */
-        if (horizontal > vertical)
-        {
-            float x =
-                direction.x >= 0f
-                    ? bounds.xMax
-                    : bounds.xMin;
-
-            /*
-             * Não deixa o grapple point exatamente
-             * no centro vertical da plataforma.
-             *
-             * Isso ajuda a criar situações mais
-             * naturais para o swing.
-             */
-            float verticalOffset =
-                direction.y *
-                bounds.y *
-                0.35f;
-
-            float y =
-                Mathf.Clamp(
-                    platform.Position.y +
-                    verticalOffset,
-                    bounds.yMin,
-                    bounds.yMax
-                );
-
-            return new Vector2(
-                x,
-                y
+        Vector2 midpoint =
+            Vector2.Lerp(
+                fromPosition,
+                toPosition,
+                0.5f
             );
+
+        /*
+         * Coloca o gancho um pouco acima
+         * do eixo central.
+         *
+         * Isso cria uma posição de "âncora"
+         * mais natural para o swing.
+         */
+        Vector2 candidate =
+            midpoint;
+
+        candidate +=
+            Vector2.up *
+            verticalOffset;
+
+        /*
+         * Pequena influência perpendicular
+         * evita que todos os grapples fiquem
+         * exatamente alinhados.
+         */
+        float perpendicularOffset =
+            Mathf.Clamp(
+                direction.y * 0.5f,
+                -1f,
+                1f
+            );
+
+        candidate +=
+            perpendicular *
+            perpendicularOffset;
+
+        /*
+         * Calcula a distância até cada plataforma.
+         */
+        float distanceFromFrom =
+            DistanceFromPlatform(
+                candidate,
+                from
+            );
+
+        float distanceFromTo =
+            DistanceFromPlatform(
+                candidate,
+                to
+            );
+
+        /*
+         * Se o ponto ficou muito perto de uma
+         * plataforma, empurra para longe dela.
+         */
+        if (distanceFromFrom <
+            minimumDistanceFromPlatform)
+        {
+            candidate =
+                PushAwayFromPlatform(
+                    candidate,
+                    from,
+                    minimumDistanceFromPlatform
+                );
+        }
+
+        if (distanceFromTo <
+            minimumDistanceFromPlatform)
+        {
+            candidate =
+                PushAwayFromPlatform(
+                    candidate,
+                    to,
+                    minimumDistanceFromPlatform
+                );
         }
 
         /*
-         * Predominantemente vertical:
-         * usa topo ou base.
+         * Faz uma pequena correção em direção
+         * ao ponto ideal entre as plataformas.
          */
-        float yPosition =
-            direction.y >= 0f
-                ? bounds.yMax
-                : bounds.yMin;
+        Vector2 preferred =
+            midpoint +
+            Vector2.up *
+            verticalOffset;
 
-        float horizontalOffset =
-            direction.x *
-            bounds.x *
-            0.35f;
-
-        float xPosition =
-            Mathf.Clamp(
-                platform.Position.x +
-                horizontalOffset,
-                bounds.xMin,
-                bounds.xMax
+        candidate =
+            Vector2.Lerp(
+                candidate,
+                preferred,
+                midpointInfluence
             );
 
-        return new Vector2(
-            xPosition,
-            yPosition
+        /*
+         * Segunda verificação depois da interpolação.
+         */
+        candidate =
+            PushAwayIfNecessary(
+                candidate,
+                from,
+                minimumDistanceFromPlatform
+            );
+
+        candidate =
+            PushAwayIfNecessary(
+                candidate,
+                to,
+                minimumDistanceFromPlatform
+            );
+
+        /*
+         * Mantém o ponto dentro de uma distância
+         * razoável das plataformas.
+         */
+        candidate =
+            LimitDistanceFromPlatforms(
+                candidate,
+                from,
+                to,
+                maximumDistanceFromPlatform
+            );
+
+        return candidate;
+    }
+
+    public static bool IsValid(
+        Vector2 position,
+        GeneratedPlatform from,
+        GeneratedPlatform to,
+        float minimumDistanceFromPlatform,
+        float maximumDistanceFromPlatform
+    )
+    {
+        if (from == null || to == null)
+            return false;
+
+        float fromDistance =
+            DistanceFromPlatform(
+                position,
+                from
+            );
+
+        float toDistance =
+            DistanceFromPlatform(
+                position,
+                to
+            );
+
+        if (fromDistance <
+            minimumDistanceFromPlatform)
+        {
+            return false;
+        }
+
+        if (toDistance <
+            minimumDistanceFromPlatform)
+        {
+            return false;
+        }
+
+        if (fromDistance >
+            maximumDistanceFromPlatform)
+        {
+            return false;
+        }
+
+        if (toDistance >
+            maximumDistanceFromPlatform)
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    private static Vector2 PushAwayIfNecessary(
+        Vector2 position,
+        GeneratedPlatform platform,
+        float minimumDistance
+    )
+    {
+        float distance =
+            DistanceFromPlatform(
+                position,
+                platform
+            );
+
+        if (distance >= minimumDistance)
+            return position;
+
+        return PushAwayFromPlatform(
+            position,
+            platform,
+            minimumDistance
         );
+    }
+
+    private static Vector2 PushAwayFromPlatform(
+        Vector2 position,
+        GeneratedPlatform platform,
+        float minimumDistance
+    )
+    {
+        Vector2 closest =
+            ClosestPoint(
+                position,
+                platform.Bounds
+            );
+
+        Vector2 direction =
+            position -
+            closest;
+
+        if (direction.sqrMagnitude <= 0.001f)
+        {
+            direction =
+                Vector2.up;
+        }
+
+        direction.Normalize();
+
+        return closest +
+               direction *
+               minimumDistance;
+    }
+
+    private static float DistanceFromPlatform(
+        Vector2 position,
+        GeneratedPlatform platform
+    )
+    {
+        Vector2 closest =
+            ClosestPoint(
+                position,
+                platform.Bounds
+            );
+
+        return Vector2.Distance(
+            position,
+            closest
+        );
+    }
+
+    private static Vector2 ClosestPoint(
+        Vector2 position,
+        Rect bounds
+    )
+    {
+        return new Vector2(
+            Mathf.Clamp(
+                position.x,
+                bounds.xMin,
+                bounds.xMax
+            ),
+            Mathf.Clamp(
+                position.y,
+                bounds.yMin,
+                bounds.yMax
+            )
+        );
+    }
+
+    private static Vector2 LimitDistanceFromPlatforms(
+        Vector2 position,
+        GeneratedPlatform from,
+        GeneratedPlatform to,
+        float maximumDistance
+    )
+    {
+        Vector2 midpoint =
+            Vector2.Lerp(
+                from.Position,
+                to.Position,
+                0.5f
+            );
+
+        Vector2 direction =
+            position -
+            midpoint;
+
+        float distance =
+            direction.magnitude;
+
+        if (distance <= maximumDistance)
+            return position;
+
+        if (distance <= 0.001f)
+            return midpoint;
+
+        direction.Normalize();
+
+        return midpoint +
+               direction *
+               maximumDistance;
     }
 }

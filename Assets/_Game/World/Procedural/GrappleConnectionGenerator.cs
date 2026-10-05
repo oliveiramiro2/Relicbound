@@ -6,48 +6,54 @@ public class GrappleConnectionGenerator
 {
     private readonly GameObject grapplePointPrefab;
 
-    private readonly float minimumGrappleDistance;
-    private readonly float maximumGrappleDistance;
+    private readonly float minimumConnectionDistance;
+    private readonly float maximumConnectionDistance;
 
     private readonly int maximumConnections;
     private readonly int maximumConnectionsPerPlatform;
 
-    private readonly float distanceFromPlatform;
+    private readonly float minimumDistanceFromPlatform;
+    private readonly float preferredDistanceFromPlatform;
+    private readonly float maximumDistanceFromPlatform;
 
-    private readonly float preferredDistance;
+    private readonly float midpointInfluence;
+    private readonly float verticalOffset;
 
     private readonly float verticalMovementWeight;
     private readonly float horizontalMovementWeight;
     private readonly float distanceWeight;
-    private readonly float separationWeight;
+    private readonly float routeDifferenceWeight;
 
     public GrappleConnectionGenerator(
         GameObject grapplePointPrefab,
-        float minimumGrappleDistance,
-        float maximumGrappleDistance,
+        float minimumConnectionDistance,
+        float maximumConnectionDistance,
         int maximumConnections,
         int maximumConnectionsPerPlatform,
-        float distanceFromPlatform,
-        float preferredDistance,
+        float minimumDistanceFromPlatform,
+        float preferredDistanceFromPlatform,
+        float maximumDistanceFromPlatform,
+        float midpointInfluence,
+        float verticalOffset,
         float verticalMovementWeight,
         float horizontalMovementWeight,
         float distanceWeight,
-        float separationWeight
+        float routeDifferenceWeight
     )
     {
         this.grapplePointPrefab =
             grapplePointPrefab;
 
-        this.minimumGrappleDistance =
+        this.minimumConnectionDistance =
             Mathf.Max(
                 0f,
-                minimumGrappleDistance
+                minimumConnectionDistance
             );
 
-        this.maximumGrappleDistance =
+        this.maximumConnectionDistance =
             Mathf.Max(
-                this.minimumGrappleDistance,
-                maximumGrappleDistance
+                this.minimumConnectionDistance,
+                maximumConnectionDistance
             );
 
         this.maximumConnections =
@@ -62,16 +68,31 @@ public class GrappleConnectionGenerator
                 maximumConnectionsPerPlatform
             );
 
-        this.distanceFromPlatform =
+        this.minimumDistanceFromPlatform =
             Mathf.Max(
                 0f,
-                distanceFromPlatform
+                minimumDistanceFromPlatform
             );
 
-        this.preferredDistance =
-            Mathf.Clamp01(
-                preferredDistance
+        this.preferredDistanceFromPlatform =
+            Mathf.Max(
+                this.minimumDistanceFromPlatform,
+                preferredDistanceFromPlatform
             );
+
+        this.maximumDistanceFromPlatform =
+            Mathf.Max(
+                this.preferredDistanceFromPlatform,
+                maximumDistanceFromPlatform
+            );
+
+        this.midpointInfluence =
+            Mathf.Clamp01(
+                midpointInfluence
+            );
+
+        this.verticalOffset =
+            verticalOffset;
 
         this.verticalMovementWeight =
             Mathf.Max(
@@ -91,10 +112,10 @@ public class GrappleConnectionGenerator
                 distanceWeight
             );
 
-        this.separationWeight =
+        this.routeDifferenceWeight =
             Mathf.Max(
                 0f,
-                separationWeight
+                routeDifferenceWeight
             );
     }
 
@@ -121,7 +142,9 @@ public class GrappleConnectionGenerator
 
         List<GrappleCandidate>
             candidates =
-            FindCandidates(graph);
+            FindCandidates(
+                graph
+            );
 
         EvaluateCandidates(
             candidates
@@ -162,10 +185,12 @@ public class GrappleConnectionGenerator
                 continue;
             }
 
-            if (HasExistingConnection(
-                    graph,
+            if (!GrapplePointPlacement.IsValid(
+                    candidate.GrapplePosition,
                     candidate.From,
-                    candidate.To
+                    candidate.To,
+                    minimumDistanceFromPlatform,
+                    maximumDistanceFromPlatform
                 ))
             {
                 continue;
@@ -201,15 +226,15 @@ public class GrappleConnectionGenerator
         List<GrappleConnection> connections
     )
     {
-        CreateGrapplePoint(
-            candidate.From,
-            candidate.To,
-            parent
-        );
-
-        CreateGrapplePoint(
-            candidate.To,
-            candidate.From,
+        /*
+         * UM único grapple point representa
+         * a oportunidade de conexão entre
+         * as duas plataformas.
+         */
+        UnityEngine.Object.Instantiate(
+            grapplePointPrefab,
+            candidate.GrapplePosition,
+            Quaternion.identity,
             parent
         );
 
@@ -228,27 +253,6 @@ public class GrappleConnectionGenerator
 
         connections.Add(
             connection
-        );
-    }
-
-    private void CreateGrapplePoint(
-        GeneratedPlatform platform,
-        GeneratedPlatform target,
-        Transform parent
-    )
-    {
-        Vector2 position =
-            GrapplePointPlacement.Calculate(
-                platform,
-                target,
-                distanceFromPlatform
-            );
-
-        UnityEngine.Object.Instantiate(
-            grapplePointPrefab,
-            position,
-            Quaternion.identity,
-            parent
         );
     }
 
@@ -305,13 +309,35 @@ public class GrappleConnectionGenerator
                     );
 
                 if (distance <
-                    minimumGrappleDistance)
+                    minimumConnectionDistance)
                 {
                     continue;
                 }
 
                 if (distance >
-                    maximumGrappleDistance)
+                    maximumConnectionDistance)
+                {
+                    continue;
+                }
+
+                Vector2 grapplePosition =
+                    GrapplePointPlacement.Calculate(
+                        first,
+                        second,
+                        minimumDistanceFromPlatform,
+                        preferredDistanceFromPlatform,
+                        maximumDistanceFromPlatform,
+                        midpointInfluence,
+                        verticalOffset
+                    );
+
+                if (!GrapplePointPlacement.IsValid(
+                        grapplePosition,
+                        first,
+                        second,
+                        minimumDistanceFromPlatform,
+                        maximumDistanceFromPlatform
+                    ))
                 {
                     continue;
                 }
@@ -320,7 +346,8 @@ public class GrappleConnectionGenerator
                     new GrappleCandidate(
                         first,
                         second,
-                        distance
+                        distance,
+                        grapplePosition
                     );
 
                 candidates.Add(
@@ -373,64 +400,74 @@ public class GrappleConnectionGenerator
         if (total <= 0.001f)
             return 0f;
 
-        /*
-         * Quanto mais vertical for o deslocamento,
-         * maior a utilidade potencial do grapple.
-         */
         float verticalRatio =
             absoluteY /
             total;
 
-        /*
-         * Quanto mais horizontal for o deslocamento,
-         * mais útil para atravessar gaps.
-         */
         float horizontalRatio =
             absoluteX /
             total;
 
-        /*
-         * Normaliza a distância para 0..1.
-         */
         float distanceRange =
-            maximumGrappleDistance -
-            minimumGrappleDistance;
+            maximumConnectionDistance -
+            minimumConnectionDistance;
 
-        float distanceNormalized =
+        float normalizedDistance =
             distanceRange <= 0.001f
-                ? 1f
+                ? 0.5f
                 : Mathf.InverseLerp(
-                    minimumGrappleDistance,
-                    maximumGrappleDistance,
+                    minimumConnectionDistance,
+                    maximumConnectionDistance,
                     candidate.Distance
                 );
 
         /*
-         * Queremos evitar:
+         * O meio da faixa é melhor.
          *
-         * - grapples extremamente curtos
-         * - grapples no limite máximo
+         * Não queremos:
          *
-         * O pico fica na distância preferida.
+         * - conexões triviais;
+         * - conexões absurdamente longas.
          */
         float distanceScore =
             1f -
             Mathf.Abs(
-                distanceNormalized -
-                preferredDistance
+                normalizedDistance -
+                0.55f
             );
 
         /*
-         * Um pouco de preferência por plataformas
-         * separadas verticalmente.
+         * Quanto mais distante o grapple está
+         * das plataformas, mais ele funciona como
+         * um verdadeiro ponto de navegação.
          */
-        float separationScore =
+        float pointDistanceFromPlatforms =
+            Mathf.Min(
+                DistanceFromPlatform(
+                    candidate.GrapplePosition,
+                    candidate.From
+                ),
+                DistanceFromPlatform(
+                    candidate.GrapplePosition,
+                    candidate.To
+                )
+            );
+
+        float pointSpaceScore =
+            Mathf.InverseLerp(
+                minimumDistanceFromPlatform,
+                maximumDistanceFromPlatform,
+                pointDistanceFromPlatforms
+            );
+
+        /*
+         * Penaliza conexões entre plataformas
+         * que já estão praticamente lado a lado.
+         */
+        float routeDifferenceScore =
             Mathf.Clamp01(
                 candidate.Distance /
-                Mathf.Max(
-                    maximumGrappleDistance,
-                    0.001f
-                )
+                maximumConnectionDistance
             );
 
         float score =
@@ -446,10 +483,43 @@ public class GrappleConnectionGenerator
             distanceWeight;
 
         score +=
-            separationScore *
-            separationWeight;
+            routeDifferenceScore *
+            routeDifferenceWeight;
+
+        /*
+         * O espaço ao redor do gancho também
+         * participa da qualidade.
+         */
+        score +=
+            pointSpaceScore *
+            0.35f;
 
         return score;
+    }
+
+    private float DistanceFromPlatform(
+        Vector2 position,
+        GeneratedPlatform platform
+    )
+    {
+        Vector2 closest =
+            new Vector2(
+                Mathf.Clamp(
+                    position.x,
+                    platform.Bounds.min.x,
+                    platform.Bounds.max.x
+                ),
+                Mathf.Clamp(
+                    position.y,
+                    platform.Bounds.min.y,
+                    platform.Bounds.max.y
+                )
+            );
+
+        return Vector2.Distance(
+            position,
+            closest
+        );
     }
 
     private int CompareCandidates(
@@ -457,29 +527,17 @@ public class GrappleConnectionGenerator
         GrappleCandidate second
     )
     {
-        int scoreComparison =
+        int comparison =
             second.Score.CompareTo(
                 first.Score
             );
 
-        if (scoreComparison != 0)
-            return scoreComparison;
+        if (comparison != 0)
+            return comparison;
 
-        /*
-         * Empate determinístico.
-         *
-         * Isso evita que a geração dependa
-         * de detalhes do Sort.
-         */
-        int firstFromId =
-            first.From.Index;
-
-        int secondFromId =
-            second.From.Index;
-
-        int comparison =
-            firstFromId.CompareTo(
-                secondFromId
+        comparison =
+            first.From.Index.CompareTo(
+                second.From.Index
             );
 
         if (comparison != 0)
@@ -573,7 +631,7 @@ public class GrappleConnectionGenerator
         if (grapplePointPrefab == null)
             return false;
 
-        if (maximumGrappleDistance <= 0f)
+        if (maximumConnectionDistance <= 0f)
             return false;
 
         if (maximumConnections <= 0)
@@ -590,17 +648,21 @@ public class GrappleConnectionGenerator
 
         public float Distance { get; }
 
+        public Vector2 GrapplePosition { get; }
+
         public float Score { get; set; }
 
         public GrappleCandidate(
             GeneratedPlatform from,
             GeneratedPlatform to,
-            float distance
+            float distance,
+            Vector2 grapplePosition
         )
         {
             From = from;
             To = to;
             Distance = distance;
+            GrapplePosition = grapplePosition;
         }
     }
 }

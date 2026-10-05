@@ -19,4 +19,15 @@ public class PlayerRelicCollector : MonoBehaviour
 
     return relicManager.AddRelic(relic);
   }
+
+  public bool CollectSlotExpansion(int amount)
+  {
+    if (amount <= 0)
+      return false;
+
+    if (relicManager == null)
+      return false;
+
+    return relicManager.AddRelicSlots(amount);
+  }
 }

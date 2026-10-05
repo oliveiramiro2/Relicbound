@@ -101,9 +101,10 @@ public class RelicManager : MonoBehaviour
         return true;
     }
 
-    public void AddRelicSlots(int amount)
+    public bool AddRelicSlots(int amount)
     {
-        equipment.AddSlots(amount);
+        bool added = equipment.AddSlots(amount);
+        return added;
     }
 
     public bool IsRelicEquipped(Relic relic)

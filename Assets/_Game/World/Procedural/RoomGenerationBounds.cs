@@ -4,7 +4,7 @@ public class RoomGenerationBounds : MonoBehaviour
 {
   [SerializeField]
   private Vector2 size =
-      new Vector2(8f, 4f);
+      new Vector2(25f, 20f);
 
   public Vector2 Size =>
       size;

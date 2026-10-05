@@ -61,6 +61,12 @@ public class ProceduralRoom : MonoBehaviour
     public RoomMarkerGenerationResult MarkerResult =>
         markerResult;
 
+    [SerializeField]
+    private ProceduralRewardSettings rewardSettings;
+
+    [SerializeField]
+    private ProceduralRewardPrefabs rewardPrefabs;
+
     public void Generate(
         int seed,
         int roomId
@@ -119,6 +125,27 @@ public class ProceduralRoom : MonoBehaviour
         GenerateRelics(
             result,
             random
+        );
+
+        RewardGenerator rewardGenerator =
+            new RewardGenerator(
+                rewardSettings
+            );
+
+        RewardGenerationResult rewardResult =
+            rewardGenerator.Generate(
+                result,
+                roomSeed
+            );
+
+        RewardBuilder rewardBuilder =
+            new RewardBuilder(
+                transform,
+                rewardPrefabs
+            );
+
+        rewardBuilder.Build(
+            rewardResult
         );
 
         GenerateRoomMarkers(

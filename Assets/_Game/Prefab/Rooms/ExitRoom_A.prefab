@@ -61,6 +61,8 @@ MonoBehaviour:
   markerSettings: {fileID: 11400000, guid: a891038887e80b147a4871f125bf9a7e, type: 2}
   playerSpawnPrefab: {fileID: 9004795238276958273, guid: 689ae2b060a40fd4f9f5dd240961ad9f, type: 3}
   roomEntryPrefab: {fileID: 2224510003026983425, guid: 1c03b3f933903a74481a1665f13619d5, type: 3}
+  rewardSettings: {fileID: 11400000, guid: cc0b6d63895d48548ad1e02d24ed21d3, type: 2}
+  rewardPrefabs: {fileID: 11400000, guid: 00b942aeaac7fe64e89813c7427c914f, type: 2}
 --- !u!1 &2155261013296124168
 GameObject:
   m_ObjectHideFlags: 0

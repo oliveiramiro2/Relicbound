@@ -491,7 +491,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 704404c15b2a18b439ab87d48358f133, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WorldSeed
-  seed: 54321
+  seed: 543211
 --- !u!4 &132198208
 Transform:
   m_ObjectHideFlags: 0

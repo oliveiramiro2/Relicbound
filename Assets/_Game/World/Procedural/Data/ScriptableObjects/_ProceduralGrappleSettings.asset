@@ -17,11 +17,11 @@ MonoBehaviour:
   maximumConnectionsPerPlatform: 1
   minimumConnectionDistance: 5
   maximumConnectionDistance: 10
-  minimumDistanceFromPlatform: 5
-  preferredDistanceFromPlatform: 8
-  maximumDistanceFromPlatform: 10
+  minimumDistanceFromPlatform: 10
+  preferredDistanceFromPlatform: 12
+  maximumDistanceFromPlatform: 16
   midpointInfluence: 0.75
-  verticalOffset: 1.5
+  verticalOffset: 2.6
   verticalMovementWeight: 0.7
   horizontalMovementWeight: 0.9
   distanceWeight: 0.8

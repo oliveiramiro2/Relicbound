@@ -3,9 +3,9 @@ using UnityEngine;
 
 public class WorldLayoutGenerator
 {
-    private const float RoomGap = 8f;
+    private const float RoomGap = 20f;
 
-    private const float BranchVerticalGap = 6f;
+    private const float BranchVerticalGap = 20f;
 
     private readonly WorldRoomTemplateDatabase
         templateDatabase;

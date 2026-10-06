@@ -39,6 +39,18 @@ public class WorldGenerationController :
     [SerializeField]
     private RoomTransitionController roomTransitionController;
 
+    [Header("World Exit")]
+    [SerializeField]
+    private GameObject worldExitPrefab;
+
+    [SerializeField]
+    private Vector2 worldExitTriggerSize =
+        new Vector2(2f, 2f);
+
+    [Header("Player")]
+    [SerializeField]
+    private GameObject player;
+
     private void Start()
     {
         if (!generateOnStart)
@@ -152,21 +164,70 @@ public class WorldGenerationController :
             roomTransitionController
         );
 
-        if (connectionVisualizer != null)
+        WorldExitGenerator worldExitGenerator =
+            new WorldExitGenerator(
+                worldExitPrefab,
+                worldExitTriggerSize
+            );
+
+        worldExitGenerator.Generate(
+            generatedWorld,
+            this,
+            worldRoot
+        );
+    }
+
+    private void ClearWorld()
+    {
+        if (worldRoot == null)
+            return;
+
+        for (int i = worldRoot.childCount - 1; i >= 0; i--)
         {
-            connectionVisualizer.Visualize(
-                connectionResult
+            Destroy(
+                worldRoot.GetChild(i).gameObject
             );
         }
+    }
 
-        Debug.Log(
-            "WorldGenerationController: " +
-            "Generated " +
-            generatedWorld.Rooms.Count +
-            " room(s) and " +
-            connectionResult.Count +
-            " connection(s)."
-        );
+    public void GenerateNewWorld()
+    {
+        ClearWorld();
+
+        if (worldSeed == null)
+            return;
+
+
+        worldSeed.GenerateNewSeed();
+        GenerateWorld();
+        PlacePlayerAtWorldStart();
+    }
+
+    private void PlacePlayerAtWorldStart()
+    {
+        if (player == null)
+            return;
+
+        if (generatedWorld == null)
+            return;
+
+        ResetPlayerMovement(player);
+        player.GetComponent<Transform>().position =
+            new(0, 5);
+    }
+
+    private void ResetPlayerMovement(GameObject player)
+    {
+        if (player == null)
+            return;
+
+        PlayerMovement movement =
+            player.GetComponent<PlayerMovement>();
+
+        if (movement == null)
+            return;
+
+        movement.ResetMovementState();
     }
 
     public GeneratedWorld GeneratedWorld =>

@@ -60,17 +60,17 @@ O jogador mantém sua progressão enquanto o mundo é reconstruído a partir de 
 
 ### Movimento
 
-- Movimento horizontal.                      a/d
-- Pulo.                                      space
-- Dash.                                      left shift
-- Double jump.                               space
-- Modificadores de velocidade.               a/d   
-- Modificadores de altura do pulo.           space
-- Dash direcional.                           w/s/wa/sa/wd/sd + left shift
-- Dash limitado por disponibilidade.         left shift
-- Salvar estado do jogador.                  F5
-- Carregar estado do jogador.                F9 
-- grapple.                                   e  
+- Movimento horizontal.----------------------a/d
+- Pulo.--------------------------------------space
+- Dash.--------------------------------------left shift
+- Double jump.-------------------------------space
+- Modificadores de velocidade.---------------a/d   
+- Modificadores de altura do pulo.-----------space
+- Dash direcional.---------------------------w/s/wa/sa/wd/sd + left shift
+- Dash limitado por disponibilidade.---------left shift
+- Salvar estado do jogador.------------------F5
+- Carregar estado do jogador.----------------F9 
+- grapple.-----------------------------------e  
 
 O projeto utiliza exclusivamente o **novo Unity Input System**.
 

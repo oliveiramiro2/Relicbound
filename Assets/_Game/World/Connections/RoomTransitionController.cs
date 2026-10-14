@@ -74,14 +74,14 @@ public class RoomTransitionController : MonoBehaviour
       return;
     }
 
-    if (connection.From != currentRoom)
-    {
-      Debug.LogWarning(
-          "Room transition rejected because the connection " +
-          "does not originate from the current room.");
+    // if (connection.From != currentRoom)
+    // {
+    //   Debug.LogWarning(
+    //       "Room transition rejected because the connection " +
+    //       "does not originate from the current room.");
 
-      return;
-    }
+    //   return;
+    // }
 
     GeneratedRoom targetRoom =
         generatedWorld.GetRoom(
